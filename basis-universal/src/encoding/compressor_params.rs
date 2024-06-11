@@ -293,6 +293,16 @@ impl CompressorParams {
         }
     }
 
+    /// Use faster mipmap generation.
+    ///
+    /// On by default.
+    pub fn set_mipmap_fast(
+        &mut self,
+        fast: bool,
+    ) {
+        unsafe { sys::compressor_params_set_mip_fast(self.0, fast) }
+    }
+
     /// Set arbitrary userdata to be included with the basis-universal binary data
     pub fn set_userdata(
         &mut self,
