@@ -1,31 +1,32 @@
 use super::*;
+
 use crate::UserData;
 use basis_universal_sys as sys;
 
 /// A transcoder that can convert compressed basis-universal data to compressed GPU formats or raw
 /// color data
-pub struct Transcoder(*mut sys::Transcoder);
+pub struct BasisUniversalTranscoder(*mut sys::BasisUniversalTranscoder);
 
 /// Lightweight description of a mip level on a single image within basis data
 #[derive(Default, Debug, Copy, Clone)]
-pub struct ImageLevelDescription {
+pub struct BasisUniversalImageLevelDescription {
     pub original_width: u32,
     pub original_height: u32,
     pub block_count: u32,
 }
 
 /// Info for an image within basis data
-pub type ImageInfo = sys::basist_basisu_image_info;
+pub type BasisUniversalImageInfo = sys::basist_basisu_image_info;
 
 /// Info for a mip level of a single image within basis data
-pub type ImageLevelInfo = sys::basist_basisu_image_level_info;
+pub type BasisUniversalImageLevelInfo = sys::basist_basisu_image_level_info;
 
 /// Info for the complete basis file
-pub type FileInfo = sys::FileInfo;
+pub type BasisUniversalFileInfo = sys::BasisUniversalFileInfo;
 
 /// Extra parameters for transcoding an image
-#[derive(Default, Debug, Clone)]
-pub struct TranscodeParameters {
+#[derive(Default, Debug, Clone, Copy)]
+pub struct BasisUniversalTranscodeParameters {
     /// The image to transcode
     pub image_index: u32,
     /// The mip level of the image to transcode
@@ -38,24 +39,16 @@ pub struct TranscodeParameters {
     pub output_rows_in_pixels: Option<u32>,
 }
 
-/// Error result from trying to transcode an image
-#[derive(Debug, Copy, Clone)]
-pub enum TranscodeError {
-    TranscodeFormatNotSupported,
-    ImageLevelNotFound,
-    TranscodeFailed,
-}
-
-impl Default for Transcoder {
+impl Default for BasisUniversalTranscoder {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl Transcoder {
+impl BasisUniversalTranscoder {
     /// Create a transcoder
-    pub fn new() -> Transcoder {
-        unsafe { Transcoder(sys::transcoder_new()) }
+    pub fn new() -> BasisUniversalTranscoder {
+        unsafe { BasisUniversalTranscoder(sys::basis_universal_transcoder_new()) }
     }
 
     /// Validates the .basis file. This computes a crc16 over the entire file, so it's slow.
@@ -65,7 +58,7 @@ impl Transcoder {
         full_validation: bool,
     ) -> bool {
         unsafe {
-            sys::transcoder_validate_file_checksums(
+            sys::basis_universal_transcoder_validate_file_checksums(
                 self.0,
                 data.as_ptr() as _,
                 data.len() as u32,
@@ -79,7 +72,13 @@ impl Transcoder {
         &self,
         data: &[u8],
     ) -> bool {
-        unsafe { sys::transcoder_validate_header(self.0, data.as_ptr() as _, data.len() as u32) }
+        unsafe {
+            sys::basis_universal_transcoder_validate_header(
+                self.0,
+                data.as_ptr() as _,
+                data.len() as u32,
+            )
+        }
     }
 
     /// The type of texture represented by the basis data
@@ -88,7 +87,12 @@ impl Transcoder {
         data: &[u8],
     ) -> BasisTextureType {
         unsafe {
-            sys::transcoder_get_texture_type(self.0, data.as_ptr() as _, data.len() as u32).into()
+            sys::basis_universal_transcoder_get_texture_type(
+                self.0,
+                data.as_ptr() as _,
+                data.len() as u32,
+            )
+            .into()
         }
     }
 
@@ -98,7 +102,12 @@ impl Transcoder {
         data: &[u8],
     ) -> BasisTextureFormat {
         unsafe {
-            sys::transcoder_get_tex_format(self.0, data.as_ptr() as _, data.len() as u32).into()
+            sys::basis_universal_transcoder_get_tex_format(
+                self.0,
+                data.as_ptr() as _,
+                data.len() as u32,
+            )
+            .into()
         }
     }
 
@@ -108,7 +117,7 @@ impl Transcoder {
     ) -> Result<UserData, ()> {
         let mut userdata = UserData::default();
         let result = unsafe {
-            sys::transcoder_get_userdata(
+            sys::basis_universal_transcoder_get_userdata(
                 self.0,
                 data.as_ptr() as _,
                 data.len() as u32,
@@ -129,7 +138,13 @@ impl Transcoder {
         &self,
         data: &[u8],
     ) -> u32 {
-        unsafe { sys::transcoder_get_total_images(self.0, data.as_ptr() as _, data.len() as u32) }
+        unsafe {
+            sys::basis_universal_transcoder_get_total_images(
+                self.0,
+                data.as_ptr() as _,
+                data.len() as u32,
+            )
+        }
     }
 
     /// Number of mipmap levels for the specified image in the basis data
@@ -139,7 +154,7 @@ impl Transcoder {
         image_index: u32,
     ) -> u32 {
         unsafe {
-            sys::transcoder_get_total_image_levels(
+            sys::basis_universal_transcoder_get_total_image_levels(
                 self.0,
                 data.as_ptr() as _,
                 data.len() as u32,
@@ -154,10 +169,10 @@ impl Transcoder {
         data: &[u8],
         image_index: u32,
         level_index: u32,
-    ) -> Option<ImageLevelDescription> {
-        let mut description = ImageLevelDescription::default();
+    ) -> Option<BasisUniversalImageLevelDescription> {
+        let mut description = BasisUniversalImageLevelDescription::default();
         unsafe {
-            if sys::transcoder_get_image_level_desc(
+            if sys::basis_universal_transcoder_get_image_level_desc(
                 self.0,
                 data.as_ptr() as _,
                 data.len() as u32,
@@ -179,10 +194,10 @@ impl Transcoder {
         &self,
         data: &[u8],
         image_index: u32,
-    ) -> Option<ImageInfo> {
-        let mut image_info = unsafe { std::mem::zeroed::<ImageInfo>() };
+    ) -> Option<BasisUniversalImageInfo> {
+        let mut image_info = unsafe { std::mem::zeroed::<BasisUniversalImageInfo>() };
         unsafe {
-            if sys::transcoder_get_image_info(
+            if sys::basis_universal_transcoder_get_image_info(
                 self.0,
                 data.as_ptr() as _,
                 data.len() as u32,
@@ -202,10 +217,10 @@ impl Transcoder {
         data: &[u8],
         image_index: u32,
         level_index: u32,
-    ) -> Option<ImageLevelInfo> {
-        let mut image_level_info = unsafe { std::mem::zeroed::<ImageLevelInfo>() };
+    ) -> Option<BasisUniversalImageLevelInfo> {
+        let mut image_level_info = unsafe { std::mem::zeroed::<BasisUniversalImageLevelInfo>() };
         unsafe {
-            if sys::transcoder_get_image_level_info(
+            if sys::basis_universal_transcoder_get_image_level_info(
                 self.0,
                 data.as_ptr() as _,
                 data.len() as u32,
@@ -224,10 +239,10 @@ impl Transcoder {
     pub fn file_info(
         &self,
         data: &[u8],
-    ) -> Option<FileInfo> {
-        let mut file_info = unsafe { std::mem::zeroed::<FileInfo>() };
+    ) -> Option<BasisUniversalFileInfo> {
+        let mut file_info = unsafe { std::mem::zeroed::<BasisUniversalFileInfo>() };
         unsafe {
-            if sys::transcoder_get_file_info(
+            if sys::basis_universal_transcoder_get_file_info(
                 self.0,
                 data.as_ptr() as _,
                 data.len() as u32,
@@ -249,7 +264,11 @@ impl Transcoder {
     ) -> Result<(), ()> {
         transcoder_init();
         unsafe {
-            if sys::transcoder_start_transcoding(self.0, data.as_ptr() as _, data.len() as u32) {
+            if sys::basis_universal_transcoder_start_transcoding(
+                self.0,
+                data.as_ptr() as _,
+                data.len() as u32,
+            ) {
                 Ok(())
             } else {
                 Err(())
@@ -260,7 +279,7 @@ impl Transcoder {
     /// Parallel with `prepare_transcoding()`, named `stop_transcoding` in the original library
     pub fn end_transcoding(&mut self) {
         unsafe {
-            let result = sys::transcoder_stop_transcoding(self.0);
+            let result = sys::basis_universal_transcoder_stop_transcoding(self.0);
             // I think this function is actually infallible, so don't return a result
             debug_assert!(result);
         }
@@ -268,7 +287,7 @@ impl Transcoder {
 
     /// Returns true if prepare_transcoding() has been called.
     pub fn is_prepared_to_transcode(&self) -> bool {
-        unsafe { sys::transcoder_get_ready_to_transcode(self.0) }
+        unsafe { sys::basis_universal_transcoder_get_ready_to_transcode(self.0) }
     }
 
     /// transcode_image_level() decodes a single mipmap level from the .basis file to any of the supported output texture formats.
@@ -286,7 +305,7 @@ impl Transcoder {
         &self,
         data: &[u8],
         transcode_format: TranscoderTextureFormat,
-        transcode_parameters: TranscodeParameters,
+        transcode_parameters: BasisUniversalTranscodeParameters,
     ) -> Result<Vec<u8>, TranscodeError> {
         let image_index = transcode_parameters.image_index;
         let level_index = transcode_parameters.level_index;
@@ -330,7 +349,7 @@ impl Transcoder {
         //
         let mut output = vec![0_u8; required_buffer_bytes];
         let success = unsafe {
-            sys::transcoder_transcode_image_level(
+            sys::basis_universal_transcoder_transcode_image_level(
                 self.0,
                 data.as_ptr() as _,
                 data.len() as u32,
@@ -378,102 +397,10 @@ impl Transcoder {
     //            uint32_t block_stride_in_bytes, uint32_t output_row_pitch_in_blocks_or_pixels);
 }
 
-impl Drop for Transcoder {
+impl Drop for BasisUniversalTranscoder {
     fn drop(&mut self) {
         unsafe {
-            sys::transcoder_delete(self.0);
-        }
-    }
-}
-
-pub struct LowLevelUastcTranscoder(*mut sys::LowLevelUastcTranscoder);
-
-impl Default for LowLevelUastcTranscoder {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-#[derive(Debug)]
-pub struct SliceParametersUastc {
-    pub num_blocks_x: u32,
-    pub num_blocks_y: u32,
-    pub has_alpha: bool,
-    pub original_width: u32,
-    pub original_height: u32,
-}
-
-impl LowLevelUastcTranscoder {
-    /// Create a LowLevelUastcTranscoder
-    pub fn new() -> LowLevelUastcTranscoder {
-        transcoder_init();
-        unsafe { LowLevelUastcTranscoder(sys::low_level_uastc_transcoder_new()) }
-    }
-
-    pub fn transcode_slice(
-        &self,
-        data: &[u8],
-        slice_parameters: SliceParametersUastc,
-        decode_flags: DecodeFlags,
-        transcode_block_format: TranscoderBlockFormat,
-    ) -> Result<Vec<u8>, TranscodeError> {
-        let bc1_allow_threecolor_blocks = false;
-        let transcoder_state = std::ptr::null_mut();
-        let channel0 = 0;
-        let channel1 = 3;
-
-        let output_row_pitch_in_blocks_or_pixels =
-            (slice_parameters.original_width + transcode_block_format.block_width() - 1)
-                / transcode_block_format.block_width();
-        let output_rows_in_pixels = slice_parameters.original_height;
-        let total_slice_blocks = slice_parameters.num_blocks_x * slice_parameters.num_blocks_y;
-        let required_buffer_bytes = transcode_block_format.calculate_minimum_output_buffer_bytes(
-            slice_parameters.original_width,
-            slice_parameters.original_height,
-            total_slice_blocks,
-            Some(output_row_pitch_in_blocks_or_pixels),
-            Some(output_rows_in_pixels),
-        ) as usize;
-
-        let output_block_or_pixel_stride_in_bytes =
-            transcode_block_format.bytes_per_block_or_pixel();
-
-        let mut output = vec![0_u8; required_buffer_bytes];
-        let success = unsafe {
-            sys::low_level_uastc_transcoder_transcode_slice(
-                self.0,
-                output.as_mut_ptr() as _,
-                slice_parameters.num_blocks_x,
-                slice_parameters.num_blocks_y,
-                data.as_ptr() as _,
-                data.len() as u32,
-                transcode_block_format.into(),
-                output_block_or_pixel_stride_in_bytes,
-                bc1_allow_threecolor_blocks,
-                slice_parameters.has_alpha,
-                slice_parameters.original_width,
-                slice_parameters.original_height,
-                output_row_pitch_in_blocks_or_pixels,
-                transcoder_state,
-                output_rows_in_pixels,
-                channel0,
-                channel1,
-                decode_flags.bits(),
-            )
-        };
-
-        if success {
-            Ok(output)
-        } else {
-            Err(TranscodeError::TranscodeFailed)
-        }
-    }
-}
-
-impl Drop for LowLevelUastcTranscoder {
-    fn drop(&mut self) {
-        unsafe {
-            sys::low_level_uastc_transcoder_delete(self.0);
+            sys::basis_universal_transcoder_delete(self.0);
         }
     }
 }

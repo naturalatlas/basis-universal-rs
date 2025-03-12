@@ -11,8 +11,15 @@ description = "Bindings for the basis-universal Supercompressed GPU Texture Code
 keywords = ["game", "basis-universal", "texture", "compression", "gpu"]
 categories = ["game-development", "graphics", "api-bindings", "compression", "encoding"]
 
+[features]
+default = ["transcoding", "encoding", "ktx2"]
+encoding = ["basis-universal-sys/encoding"]
+transcoding = ["basis-universal-sys/transcoding"]
+ktx2 = ["basis-universal-sys/ktx2"]
+zstd = ["basis-universal-sys/zstd"]
+
 [dependencies]
-basis-universal-sys = { version = "0.3.1", path = "../basis-universal-sys" }
+basis-universal-sys = { version = "0.3.1", path = "../basis-universal-sys", default-features = false }
 lazy_static = "1.4.0"
 bitflags = "1.2.1"
 

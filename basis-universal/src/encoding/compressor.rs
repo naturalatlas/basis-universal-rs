@@ -1,11 +1,10 @@
 use super::*;
 use basis_universal_sys as sys;
-pub use basis_universal_sys::ColorU8;
 
 /// Error codes that can be returned when encoding basis-universal data with a [Compressor]
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone, Debug, PartialEq)]
-#[repr(i32)]
+#[repr(u32)]
 pub enum CompressorErrorCode {
     cECFailedReadingSourceImages =
         sys::basisu_basis_compressor_error_code_cECFailedReadingSourceImages,

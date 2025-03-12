@@ -3,7 +3,7 @@ use std::ffi::CStr;
 
 /// The type of data stored
 #[derive(Copy, Clone, Debug, PartialEq)]
-#[repr(i32)]
+#[repr(u32)]
 pub enum BasisTextureType {
     /// An arbitrary array of 2D RGB or RGBA images with optional mipmaps, array size = # images, each image may have a different resolution and # of mipmap levels
     TextureType2D = sys::basist_basis_texture_type_cBASISTexType2D,
@@ -84,74 +84,84 @@ impl BasisTextureFormat {
 pub enum TranscoderTextureFormat {
     /// Opaque only, returns RGB or alpha data if cDecodeFlagsTranscodeAlphaDataToOpaqueFormats flag is specified
     ETC1_RGB = sys::basist_transcoder_texture_format_cTFETC1_RGB,
-    /// Opaque+alpha, ETC2_EAC_A8 block followed by a ETC1 block, alpha channel will be opaque for opaque .basis files
+
+    /// Opaque+alpha, ETC2_EAC_A8 block followed by an ETC1 block, alpha channel will be opaque for opaque .basis files
     ETC2_RGBA = sys::basist_transcoder_texture_format_cTFETC2_RGBA,
 
-    //
-    // BC1-5, BC7 (desktop, some mobile devices)
-    //
     /// Opaque only, no punchthrough alpha support yet, transcodes alpha slice if cDecodeFlagsTranscodeAlphaDataToOpaqueFormats flag is specified
     BC1_RGB = sys::basist_transcoder_texture_format_cTFBC1_RGB,
+
     /// Opaque+alpha, BC4 followed by a BC1 block, alpha channel will be opaque for opaque .basis files
     BC3_RGBA = sys::basist_transcoder_texture_format_cTFBC3_RGBA,
+
     /// Red only, alpha slice is transcoded to output if cDecodeFlagsTranscodeAlphaDataToOpaqueFormats flag is specified
     BC4_R = sys::basist_transcoder_texture_format_cTFBC4_R,
+
     /// XY: Two BC4 blocks, X=R and Y=Alpha, .basis file should have alpha data (if not Y will be all 255's)
     BC5_RG = sys::basist_transcoder_texture_format_cTFBC5_RG,
+
     /// RGB or RGBA, mode 5 for ETC1S, modes (1,2,3,5,6,7) for UASTC
     BC7_RGBA = sys::basist_transcoder_texture_format_cTFBC7_RGBA,
 
-    //
-    // PVRTC1 4bpp (mobile, PowerVR devices)
-    //
     /// Opaque only, RGB or alpha if cDecodeFlagsTranscodeAlphaDataToOpaqueFormats flag is specified, nearly lowest quality of any texture format.
     PVRTC1_4_RGB = sys::basist_transcoder_texture_format_cTFPVRTC1_4_RGB,
+
     /// Opaque+alpha, most useful for simple opacity maps. If .basis file doesn't have alpha cTFPVRTC1_4_RGB will be used instead. Lowest quality of any supported texture format.
     PVRTC1_4_RGBA = sys::basist_transcoder_texture_format_cTFPVRTC1_4_RGBA,
 
-    //
-    // ASTC (mobile, Intel devices, hopefully all desktop GPU's one day)
-    //
-    /// Opaque+alpha, ASTC 4x4, alpha channel will be opaque for opaque .basis files. Transcoder uses RGB/RGBA/L/LA modes, void extent, and up to two ([0,47] and [0,255]) endpoint precisions.
+    /// LDR. Opaque+alpha, ASTC 4x4, alpha channel will be opaque for opaque .basis files.
     ASTC_4x4_RGBA = sys::basist_transcoder_texture_format_cTFASTC_4x4_RGBA,
 
-    //
-    // ATC (mobile, Adreno devices, this is a niche format)
-    //
     /// Opaque, RGB or alpha if cDecodeFlagsTranscodeAlphaDataToOpaqueFormats flag is specified. ATI ATC (GL_ATC_RGB_AMD)
     ATC_RGB = sys::basist_transcoder_texture_format_cTFATC_RGB,
+
     /// Opaque+alpha, alpha channel will be opaque for opaque .basis files. ATI ATC (GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD)
     ATC_RGBA = sys::basist_transcoder_texture_format_cTFATC_RGBA,
 
-    //
-    // FXT1 (desktop, Intel devices, this is a super obscure format)
-    //
-    /// Opaque only, uses exclusively CC_MIXED blocks. Notable for having a 8x4 block size. GL_3DFX_texture_compression_FXT1 is supported on Intel integrated GPU's (such as HD 630).
-    /// Punch-through alpha is relatively easy to support, but full alpha is harder. This format is only here for completeness so opaque-only is fine for now.
-    /// See the BASISU_USE_ORIGINAL_3DFX_FXT1_ENCODING macro in basisu_transcoder_internal.h.
+    /// Opaque only, uses exclusively CC_MIXED blocks. Notable for having an 8x4 block size.
     FXT1_RGB = sys::basist_transcoder_texture_format_cTFFXT1_RGB,
 
     /// Opaque-only, almost BC1 quality, much faster to transcode and supports arbitrary texture dimensions (unlike PVRTC1 RGB).
     PVRTC2_4_RGB = sys::basist_transcoder_texture_format_cTFPVRTC2_4_RGB,
-    /// Opaque+alpha, slower to encode than cTFPVRTC2_4_RGB. Premultiplied alpha is highly recommended, otherwise the color channel can leak into the alpha channel on transparent blocks.
+
+    /// Opaque+alpha, slower to encode than cTFPVRTC2_4_RGB. Premultiplied alpha is highly recommended.
     PVRTC2_4_RGBA = sys::basist_transcoder_texture_format_cTFPVRTC2_4_RGBA,
 
     /// R only (ETC2 EAC R11 unsigned)
     ETC2_EAC_R11 = sys::basist_transcoder_texture_format_cTFETC2_EAC_R11,
+
     /// RG only (ETC2 EAC RG11 unsigned), R=opaque.r, G=alpha - for tangent space normal maps
     ETC2_EAC_RG11 = sys::basist_transcoder_texture_format_cTFETC2_EAC_RG11,
 
-    //
-    // Uncompressed (raw pixel) formats
-    //
+    /// HDR, RGB only, unsigned
+    BC6H = sys::basist_transcoder_texture_format_cTFBC6H,
+
+    /// HDR, RGBA (currently UASTC HDR 4x4 encoders are only RGB), unsigned
+    ASTC_HDR_4x4_RGBA = sys::basist_transcoder_texture_format_cTFASTC_HDR_4x4_RGBA,
+
     /// 32bpp RGBA image stored in raster (not block) order in memory, R is first byte, A is last byte.
     RGBA32 = sys::basist_transcoder_texture_format_cTFRGBA32,
+
     /// 16bpp RGB image stored in raster (not block) order in memory, R at bit position 11
     RGB565 = sys::basist_transcoder_texture_format_cTFRGB565,
+
     /// 16bpp RGB image stored in raster (not block) order in memory, R at bit position 0
     BGR565 = sys::basist_transcoder_texture_format_cTFBGR565,
+
     /// 16bpp RGBA image stored in raster (not block) order in memory, R at bit position 12, A at bit position 0
     RGBA4444 = sys::basist_transcoder_texture_format_cTFRGBA4444,
+
+    /// 48bpp RGB half (16-bits/component, 3 components)
+    RGB_HALF = sys::basist_transcoder_texture_format_cTFRGB_HALF,
+
+    /// 64bpp RGBA half (16-bits/component, 4 components)
+    RGBA_HALF = sys::basist_transcoder_texture_format_cTFRGBA_HALF,
+
+    /// 32bpp RGB 9E5 (shared exponent, positive only)
+    RGB_9E5 = sys::basist_transcoder_texture_format_cTFRGB_9E5,
+
+    /// HDR, RGBA (currently our ASTC HDR 6x6 encodes are only RGB), unsigned
+    ASTC_HDR_6x6_RGBA = sys::basist_transcoder_texture_format_cTFASTC_HDR_6x6_RGBA,
 }
 
 impl Into<sys::basist_transcoder_texture_format> for TranscoderTextureFormat {
@@ -253,7 +263,6 @@ impl TranscoderTextureFormat {
             minimum_output_buffer_blocks_or_pixels,
             original_width,
             original_height,
-            total_slice_blocks,
             Some(output_row_pitch_in_blocks_or_pixels),
             Some(output_rows_in_pixels),
         ));
@@ -285,7 +294,6 @@ impl TranscoderTextureFormat {
         output_blocks_buf_size_in_blocks_or_pixels: u32,
         original_width: u32,
         original_height: u32,
-        total_slice_blocks: u32,
         output_row_pitch_in_blocks_or_pixels: Option<u32>,
         output_rows_in_pixels: Option<u32>,
     ) -> bool {
@@ -297,7 +305,6 @@ impl TranscoderTextureFormat {
                 original_height,
                 output_row_pitch_in_blocks_or_pixels.unwrap_or(0),
                 output_rows_in_pixels.unwrap_or(0),
-                total_slice_blocks,
             )
         }
     }
@@ -305,7 +312,7 @@ impl TranscoderTextureFormat {
 
 bitflags::bitflags! {
     /// Flags that affect transcoding
-    pub struct DecodeFlags: i32 {
+    pub struct DecodeFlags: u32 {
         /// PVRTC1: decode non-pow2 ETC1S texture level to the next larger power of 2 (not implemented yet, but we're going to support it). Ignored if the slice's dimensions are already a power of 2.
         const PVRTC_DECODE_TO_NEXT_POW_2 = sys::basist_basisu_decode_flags_cDecodeFlagsPVRTCDecodeToNextPow2;
 
@@ -386,6 +393,14 @@ pub enum TranscoderBlockFormat {
     RGBA4444_ALPHA = sys::basist_block_format_cRGBA4444_ALPHA,
     RGBA4444_COLOR_OPAQUE = sys::basist_block_format_cRGBA4444_COLOR_OPAQUE,
     RGBA4444 = sys::basist_block_format_cRGBA4444,
+    RGBA_HALF = sys::basist_block_format_cRGBA_HALF,
+    RGB_HALF = sys::basist_block_format_cRGB_HALF,
+    RGB_9E5 = sys::basist_block_format_cRGB_9E5,
+    UASTC_4x4 = sys::basist_block_format_cUASTC_4x4,
+    UASTC_HDR_4x4 = sys::basist_block_format_cUASTC_HDR_4x4,
+    BC6H = sys::basist_block_format_cBC6H,
+    ASTC_HDR_4x4 = sys::basist_block_format_cASTC_HDR_4x4,
+    ASTC_HDR_6x6 = sys::basist_block_format_cASTC_HDR_6x6,
 }
 
 impl Into<sys::basist_block_format> for TranscoderBlockFormat {
@@ -424,6 +439,11 @@ impl TranscoderBlockFormat {
             TranscoderBlockFormat::PVRTC2_4_RGBA => 8,
             TranscoderBlockFormat::ETC2_EAC_R11 => 8,
             TranscoderBlockFormat::ETC2_EAC_RG11 => 16,
+            TranscoderBlockFormat::BC6H => 16,
+            TranscoderBlockFormat::ASTC_HDR_4x4 => 16,
+            TranscoderBlockFormat::ASTC_HDR_6x6 => 16,
+            TranscoderBlockFormat::UASTC_4x4 => 16,
+            TranscoderBlockFormat::UASTC_HDR_4x4 => 16,
             TranscoderBlockFormat::Indices => 2,
             TranscoderBlockFormat::RGB32 => 4,
             TranscoderBlockFormat::RGBA32 => 4,
@@ -434,6 +454,9 @@ impl TranscoderBlockFormat {
             TranscoderBlockFormat::RGBA4444_ALPHA => 2,
             TranscoderBlockFormat::RGBA4444_COLOR_OPAQUE => 2,
             TranscoderBlockFormat::RGBA4444 => 2,
+            TranscoderBlockFormat::RGBA_HALF => 8,
+            TranscoderBlockFormat::RGB_HALF => 6,
+            TranscoderBlockFormat::RGB_9E5 => 4,
         }
     }
 
@@ -450,17 +473,21 @@ impl TranscoderBlockFormat {
         unsafe { !sys::basis_block_format_is_uncompressed(self.into()) }
     }
 
-    /// Returns the block width for the specified texture format, which is currently either 4 or 8 for FXT1.
+    /// Returns the block width for the specified texture format, which is currently either 4, 6, or 8 for FXT1.
     pub fn block_width(self) -> u32 {
         match self {
             TranscoderBlockFormat::FXT1_RGB => 8,
+            TranscoderBlockFormat::ASTC_HDR_6x6 => 6,
             _ => 4,
         }
     }
 
-    /// Returns the block height for the specified texture format, which is currently always 4.
+    /// Returns the block height for the specified texture format.
     pub fn block_height(self) -> u32 {
-        4
+        match self {
+            TranscoderBlockFormat::ASTC_HDR_6x6 => 6,
+            _ => 4,
+        }
     }
 
     /// Calculate the minimum output buffer required to store transcoded data in blocks for
@@ -473,14 +500,14 @@ impl TranscoderBlockFormat {
         output_row_pitch_in_blocks_or_pixels: Option<u32>,
         output_rows_in_pixels: Option<u32>,
     ) -> u32 {
-        // Default of 0 is fine for these values
-        let mut output_row_pitch_in_blocks_or_pixels =
-            output_row_pitch_in_blocks_or_pixels.unwrap_or(0);
-        let mut output_rows_in_pixels = output_rows_in_pixels.unwrap_or(0);
-
         // Derived from implementation of basis_validate_output_buffer_size
 
         if !self.is_compressed() {
+            // Default of 0 is fine for these values
+            let mut output_row_pitch_in_blocks_or_pixels =
+                output_row_pitch_in_blocks_or_pixels.unwrap_or(0);
+            let mut output_rows_in_pixels = output_rows_in_pixels.unwrap_or(0);
+
             // Assume the output buffer is orig_width by orig_height
             if output_row_pitch_in_blocks_or_pixels == 0 {
                 output_row_pitch_in_blocks_or_pixels = original_width;
@@ -491,10 +518,16 @@ impl TranscoderBlockFormat {
             }
 
             output_rows_in_pixels * output_row_pitch_in_blocks_or_pixels
-        } else if self == TranscoderBlockFormat::FXT1_RGB {
-            let num_blocks_fxt1_x = (original_width + 7) / 8;
-            let num_blocks_fxt1_y = (original_height + 3) / 4;
-            num_blocks_fxt1_x * num_blocks_fxt1_y
+        } else if matches!(
+            self,
+            TranscoderBlockFormat::FXT1_RGB | TranscoderBlockFormat::ASTC_HDR_6x6
+        ) {
+            let dst_block_width = self.block_width();
+            let dst_block_height = self.block_height();
+            let num_dst_blocks_x = (original_width + dst_block_width - 1) / dst_block_width;
+            let num_dst_blocks_y = (original_height + dst_block_height - 1) / dst_block_height;
+            let total_dst_blocks = num_dst_blocks_x * num_dst_blocks_y;
+            total_dst_blocks
         } else {
             total_slice_blocks
         }

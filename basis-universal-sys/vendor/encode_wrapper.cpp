@@ -181,15 +181,15 @@ extern "C" {
 
     // According to CLI --help, this only affects ETC1S
     void compressor_params_set_quality_level(CompressorParams *params, int quality_level) {
-        params->pParams->m_quality_level = quality_level;
+        params->pParams->m_etc1s_quality_level = quality_level;
     }
 
     UastcPackFlags compressor_params_get_pack_uastc_flags(CompressorParams *params) {
-        return static_cast<UastcPackFlags>(params->pParams->m_pack_uastc_flags);
+        return static_cast<UastcPackFlags>(params->pParams->m_pack_uastc_ldr_4x4_flags);
     }
 
     void compressor_params_set_pack_uastc_flags(CompressorParams *params, UastcPackFlags pack_uastc_flags) {
-        params->pParams->m_pack_uastc_flags = static_cast<uint32_t>(pack_uastc_flags);
+        params->pParams->m_pack_uastc_ldr_4x4_flags = static_cast<uint32_t>(pack_uastc_flags);
     }
 
     void compressor_params_set_uastc(CompressorParams *params, bool is_uastc) {
@@ -213,11 +213,11 @@ extern "C" {
     }
 
     void compressor_params_set_rdo_uastc(CompressorParams *params, bool rdo_uastc) {
-        params->pParams->m_rdo_uastc = rdo_uastc;
+        params->pParams->m_rdo_uastc_ldr_4x4 = rdo_uastc;
     }
 
     void compressor_params_set_rdo_uastc_quality_scalar(CompressorParams *params, float rdo_uastc_quality_scalar) {
-        params->pParams->m_rdo_uastc_quality_scalar = rdo_uastc_quality_scalar;
+        params->pParams->m_rdo_uastc_ldr_4x4_quality_scalar = rdo_uastc_quality_scalar;
     }
 
     void compressor_params_set_generate_mipmaps(CompressorParams *params, bool generate_mipmaps) {

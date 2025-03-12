@@ -17,11 +17,15 @@
 //! Please refer to https://github.com/BinomialLLC/basis_universal for more details.
 
 /// Support for transcoding basis-universal form to GPU-friendly formats.
+#[cfg(feature = "transcoding")]
 pub mod transcoding;
+#[cfg(feature = "transcoding")]
 pub use transcoding::*;
 
 /// Support for compressing raw image data to basis-universal form
+#[cfg(feature = "encoding")]
 pub mod encoding;
+#[cfg(feature = "encoding")]
 pub use encoding::*;
 
 pub use basis_universal_sys as sys;
@@ -32,22 +36,3 @@ pub struct UserData {
     pub userdata0: u32,
     pub userdata1: u32,
 }
-
-/// The default quality level used if [CompressorParams::set_etc1s_quality_level] is not called
-pub const ETC1S_QUALITY_DEFAULT: u32 = sys::basisu_BASISU_DEFAULT_QUALITY as u32;
-/// The minimum quality level that can be provided to [CompressorParams::set_etc1s_quality_level]
-pub const ETC1S_QUALITY_MIN: u32 = sys::basisu_BASISU_QUALITY_MIN as u32;
-/// The maximum quality level that can be provided to [CompressorParams::set_etc1s_quality_level]
-pub const ETC1S_QUALITY_MAX: u32 = sys::basisu_BASISU_QUALITY_MAX as u32;
-
-/// The default quality level used if [CompressorParams::set_uastc_quality_level] is not called
-pub const UASTC_QUALITY_DEFAULT: u32 = sys::UastcPackFlags_PackUASTCLevelDefault as u32;
-/// The minimum quality level that can be provided to [CompressorParams::set_uastc_quality_level]
-pub const UASTC_QUALITY_MIN: u32 = sys::UastcPackFlags_PackUASTCLevelFastest as u32;
-/// The maximum quality level that can be provided to [CompressorParams::set_uastc_quality_level]
-pub const UASTC_QUALITY_MAX: u32 = sys::UastcPackFlags_PackUASTCLevelVerySlow as u32;
-
-/// Maximum supported texture dimension
-pub const TEXTURE_DIMENSION_MAX: u32 = sys::basisu_BASISU_MAX_SUPPORTED_TEXTURE_DIMENSION as u32;
-/// Maximum supported image dimension
-pub const IMAGE_DIMENSION_MAX: u32 = sys::basisu_BASISU_MAX_IMAGE_DIMENSION as u32;

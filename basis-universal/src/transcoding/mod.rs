@@ -5,11 +5,30 @@ use std::sync::Mutex;
 mod enums;
 pub use enums::*;
 
-mod transcoder;
-pub use transcoder::*;
+mod transcode_basis;
+pub use transcode_basis::*;
+
+mod transcode_lowlevel_uastc_ldr_4x4;
+pub use transcode_lowlevel_uastc_ldr_4x4::*;
+mod transcode_lowlevel_uastc_hdr_4x4;
+pub use transcode_lowlevel_uastc_hdr_4x4::*;
+
+#[cfg(feature = "ktx2")]
+mod transcode_ktx2;
+#[cfg(feature = "ktx2")]
+pub use transcode_ktx2::*;
 
 #[cfg(test)]
 mod transcoding_tests;
+
+/// Error result from trying to transcode an image
+#[derive(Debug, Clone)]
+pub enum TranscodeError {
+    TranscodeFormatNotSupported,
+    ImageLevelNotFound,
+    TranscodeFailed,
+    Invalid(String),
+}
 
 static TRANSCODER_INIT_CALLED: AtomicBool = AtomicBool::new(false);
 lazy_static::lazy_static! {
@@ -29,7 +48,7 @@ pub fn transcoder_init() {
             let lock = TRANSCODER_INIT_LOCK.lock().unwrap();
             if !TRANSCODER_INIT_CALLED.load(Ordering::Acquire) {
                 // Run the init code
-                sys::basisu_encoder_init();
+                sys::basisu_transcoder_init();
                 TRANSCODER_INIT_CALLED.store(true, Ordering::Release);
             }
             std::mem::drop(lock);

@@ -1,7 +1,6 @@
 use super::*;
 use crate::{BasisTextureFormat, UserData};
 use basis_universal_sys as sys;
-pub use basis_universal_sys::ColorU8;
 
 /// The color space the image to be compressed is encoded in. Using the correct color space will
 #[derive(Debug, Copy, Clone)]
@@ -173,7 +172,7 @@ impl CompressorParams {
 
         unsafe {
             let mut flags = sys::compressor_params_get_pack_uastc_flags(self.0);
-            flags |= quality_level as i32; // bindgen reflects constants as signed integers. So even if it doesn't make sense for the quality level to be signed, it has to be.
+            flags |= quality_level;
             sys::compressor_params_set_pack_uastc_flags(self.0, flags);
         }
     }
