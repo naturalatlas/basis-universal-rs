@@ -108,7 +108,6 @@ bindgen vendor/encode_wrapper.cpp -o src/encoding_bindings.rs \
   --allowlist-function compressor_params_set_quality_level \
   --allowlist-function compressor_params_get_pack_uastc_flags \
   --allowlist-function compressor_params_set_pack_uastc_flags \
-  --allowlist-function compressor_params_set_uastc \
   --allowlist-function compressor_params_set_perceptual \
   --allowlist-function compressor_params_set_mip_srgb \
   --allowlist-function compressor_params_set_no_selector_rdo \
@@ -118,6 +117,7 @@ bindgen vendor/encode_wrapper.cpp -o src/encoding_bindings.rs \
   --allowlist-function compressor_params_set_generate_mipmaps \
   --allowlist-function compressor_params_set_mip_smallest_dimension \
   --allowlist-function compressor_params_set_userdata \
+  --allowlist-function compressor_params_set_format_mode \
   \
   --allowlist-function compressor_new \
   --allowlist-function compressor_delete \

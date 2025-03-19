@@ -192,8 +192,8 @@ extern "C" {
         params->pParams->m_pack_uastc_ldr_4x4_flags = static_cast<uint32_t>(pack_uastc_flags);
     }
 
-    void compressor_params_set_uastc(CompressorParams *params, bool is_uastc) {
-        params->pParams->m_uastc = is_uastc;
+    void compressor_params_set_format_mode(CompressorParams *params, basist::basis_tex_format m) {
+        params->pParams->set_format_mode(m);
     }
 
     void compressor_params_set_perceptual(CompressorParams *params, bool perceptual) {

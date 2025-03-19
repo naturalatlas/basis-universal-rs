@@ -186,13 +186,8 @@ impl CompressorParams {
         &mut self,
         basis_format: BasisTextureFormat,
     ) {
-        let is_uastc = match basis_format {
-            BasisTextureFormat::ETC1S => false,
-            BasisTextureFormat::UASTC4x4 => true,
-        };
-
         unsafe {
-            sys::compressor_params_set_uastc(self.0, is_uastc);
+            sys::compressor_params_set_format_mode(self.0, basis_format.into());
         }
     }
 

@@ -53,6 +53,15 @@ pub enum BasisTextureFormat {
     /// (RDO) post-process stage that conditions the encoded UASTC texture data in the .basis file
     /// so it can be more effectively LZ compressed by the end user.
     UASTC4x4 = sys::basist_basis_tex_format_cUASTC4x4,
+
+    /// UASTC 4x4 HDR
+    UASTC_HDR_4x4 = sys::basist_basis_tex_format_cUASTC_HDR_4x4,
+
+    /// ASTC 6x6 HDR
+    ASTC_HDR_6x6 = sys::basist_basis_tex_format_cASTC_HDR_6x6,
+
+    /// ASTC 6x6 HDR Intermediate
+    ASTC_HDR_6x6_INTERMEDIATE = sys::basist_basis_tex_format_cASTC_HDR_6x6_INTERMEDIATE,
 }
 
 impl Into<sys::basist_basis_tex_format> for BasisTextureFormat {

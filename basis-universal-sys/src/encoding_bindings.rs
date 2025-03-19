@@ -113,6 +113,13 @@ pub const basisu_basis_compressor_error_code_cECFailedUASTCRDOPostProcess:
 pub const basisu_basis_compressor_error_code_cECFailedCreateKTX2File:
     basisu_basis_compressor_error_code = 11;
 pub type basisu_basis_compressor_error_code = ::std::os::raw::c_uint;
+pub const basist_basis_tex_format_cETC1S: basist_basis_tex_format = 0;
+pub const basist_basis_tex_format_cUASTC4x4: basist_basis_tex_format = 1;
+pub const basist_basis_tex_format_cUASTC_HDR_4x4: basist_basis_tex_format = 2;
+pub const basist_basis_tex_format_cASTC_HDR_6x6: basist_basis_tex_format = 3;
+pub const basist_basis_tex_format_cASTC_HDR_6x6_INTERMEDIATE: basist_basis_tex_format = 4;
+pub const basist_basis_tex_format_cTotalFormats: basist_basis_tex_format = 5;
+pub type basist_basis_tex_format = ::std::os::raw::c_int;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union ColorU8 {
@@ -326,9 +333,9 @@ unsafe extern "C" {
     );
 }
 unsafe extern "C" {
-    pub fn compressor_params_set_uastc(
+    pub fn compressor_params_set_format_mode(
         params: *mut CompressorParams,
-        is_uastc: bool,
+        m: basist_basis_tex_format,
     );
 }
 unsafe extern "C" {
