@@ -1,6 +1,6 @@
 use basis_universal::{
-    BasisTextureFormat, Compressor, CompressorParams, TranscodeParameters, Transcoder,
-    TranscoderTextureFormat,
+    BasisTextureFormat, BasisUniversalTranscodeParameters, BasisUniversalTranscoder, Compressor,
+    CompressorParams, TranscoderTextureFormat,
 };
 use image::{DynamicImage, GenericImageView};
 use std::io::Write;
@@ -139,6 +139,9 @@ fn benchmark_encode(
     match basis_texture_format {
         BasisTextureFormat::ETC1S => compressor_params.set_etc1s_quality_level(quality),
         BasisTextureFormat::UASTC4x4 => compressor_params.set_uastc_quality_level(quality),
+        BasisTextureFormat::UASTC_HDR_4x4 => compressor_params.set_uastc_quality_level(quality),
+        BasisTextureFormat::ASTC_HDR_6x6 => {}
+        BasisTextureFormat::ASTC_HDR_6x6_INTERMEDIATE => {}
     }
 
     compressor_params.set_print_status_to_stdout(false);
@@ -217,6 +220,9 @@ fn benchmark_transcode(
     match basis_texture_format {
         BasisTextureFormat::ETC1S => compressor_params.set_etc1s_quality_level(quality),
         BasisTextureFormat::UASTC4x4 => compressor_params.set_uastc_quality_level(quality),
+        BasisTextureFormat::UASTC_HDR_4x4 => compressor_params.set_uastc_quality_level(quality),
+        BasisTextureFormat::ASTC_HDR_6x6 => {}
+        BasisTextureFormat::ASTC_HDR_6x6_INTERMEDIATE => {}
     }
 
     compressor_params.set_print_status_to_stdout(false);
@@ -254,7 +260,7 @@ fn benchmark_transcode(
         compressor.basis_file_size() / 1024
     );
 
-    let mut transcoder = Transcoder::new();
+    let mut transcoder = BasisUniversalTranscoder::new();
 
     let transcode_formats = vec![
         TranscoderTextureFormat::ETC1_RGB,
@@ -277,7 +283,7 @@ fn benchmark_transcode(
             .transcode_image_level(
                 compressor.basis_file(),
                 transcode_format,
-                TranscodeParameters {
+                BasisUniversalTranscodeParameters {
                     image_index: 0,
                     level_index: 0,
                     ..Default::default()

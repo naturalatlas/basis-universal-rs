@@ -1,6 +1,6 @@
 use basis_universal::{
-    BasisTextureFormat, Compressor, CompressorParams, TranscodeParameters, Transcoder,
-    TranscoderTextureFormat, UserData,
+    BasisTextureFormat, BasisUniversalTranscodeParameters, BasisUniversalTranscoder, Compressor,
+    CompressorParams, TranscoderTextureFormat, UserData,
 };
 use image::GenericImageView;
 
@@ -91,7 +91,7 @@ pub fn main() {
     let basis_file = compressor.basis_file();
     // std::fs::write("example_encoded_image.basis", basis_file).unwrap();
 
-    let mut transcoder = Transcoder::new();
+    let mut transcoder = BasisUniversalTranscoder::new();
     let mip_level_count = transcoder.image_level_count(basis_file, 0);
     println!(
         "Compressed {} mip levels to {} total bytes in {} ms",
@@ -113,7 +113,7 @@ pub fn main() {
         .transcode_image_level(
             basis_file,
             TranscoderTextureFormat::ASTC_4x4_RGBA,
-            TranscodeParameters {
+            BasisUniversalTranscodeParameters {
                 image_index: 0,
                 level_index: 0,
                 ..Default::default()
@@ -133,7 +133,7 @@ pub fn main() {
         .transcode_image_level(
             basis_file,
             TranscoderTextureFormat::RGBA32,
-            TranscodeParameters {
+            BasisUniversalTranscodeParameters {
                 image_index: 0,
                 level_index: 0,
                 ..Default::default()
