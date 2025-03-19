@@ -1,5 +1,6 @@
-use basis_universal_sys as sys;
-pub use basis_universal_sys::ColorU8;
+use basis_universal_sys::encoding as sys;
+
+pub use basis_universal_sys::encoding::ColorU8;
 
 // foreign_types::foreign_type! {
 //     /// A Foo.

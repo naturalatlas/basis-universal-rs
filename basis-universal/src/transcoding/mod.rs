@@ -1,4 +1,4 @@
-use basis_universal_sys as sys;
+use basis_universal_sys::transcoding as sys;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
 

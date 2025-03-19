@@ -1,6 +1,6 @@
 use super::*;
 use crate::{BasisTextureFormat, UserData};
-use basis_universal_sys as sys;
+use basis_universal_sys::encoding as sys;
 
 /// The color space the image to be compressed is encoded in. Using the correct color space will
 #[derive(Debug, Copy, Clone)]

@@ -1,5 +1,5 @@
 use super::*;
-use basis_universal_sys as sys;
+use basis_universal_sys::encoding as sys;
 
 /// Error codes that can be returned when encoding basis-universal data with a [Compressor]
 #[allow(non_camel_case_types)]

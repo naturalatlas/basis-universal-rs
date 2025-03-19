@@ -1,7 +1,7 @@
 use std::convert::TryInto;
 
 use super::*;
-use basis_universal_sys as sys;
+use basis_universal_sys::transcoding as sys;
 
 /// Extra parameters for transcoding an image
 #[derive(Default, Debug, Clone, Copy)]

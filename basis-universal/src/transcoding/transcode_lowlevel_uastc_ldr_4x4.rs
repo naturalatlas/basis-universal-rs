@@ -1,5 +1,5 @@
 use super::*;
-use basis_universal_sys as sys;
+use basis_universal_sys::transcoding as sys;
 
 pub struct LowLevelUastcLdr4x4Transcoder(*mut sys::LowLevelUastcLdr4x4Transcoder);
 

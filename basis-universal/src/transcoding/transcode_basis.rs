@@ -1,7 +1,7 @@
 use super::*;
 
 use crate::UserData;
-use basis_universal_sys as sys;
+use basis_universal_sys::transcoding as sys;
 
 /// A transcoder that can convert compressed basis-universal data to compressed GPU formats or raw
 /// color data
