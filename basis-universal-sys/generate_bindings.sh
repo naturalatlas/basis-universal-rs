@@ -1,4 +1,4 @@
-bindgen vendor/transcode_wrapper.cpp -o src/transcoding_bindings.rs \
+bindgen vendor/transcode_wrapper.cpp -o src/transcoding.rs \
   --allowlist-function basis_get_bytes_per_block_or_pixel \
   --allowlist-function basis_get_format_name \
   --allowlist-function basis_get_block_format_name \
@@ -75,7 +75,7 @@ bindgen vendor/transcode_wrapper.cpp -o src/transcoding_bindings.rs \
   \
   -- -x c++ -std=c++17
 
-bindgen vendor/encode_wrapper.cpp -o src/encoding_bindings.rs \
+bindgen vendor/encode_wrapper.cpp -o src/encoding.rs \
   --allowlist-function image_clear \
   --allowlist-function image_resize_with_pitch \
   --allowlist-function image_resize \

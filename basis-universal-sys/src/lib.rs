@@ -4,9 +4,7 @@
 #[allow(deref_nullptr)]
 #[rustfmt::skip]
 #[cfg(feature = "transcoding")]
-mod transcoding_bindings;
-#[cfg(feature = "transcoding")]
-pub use transcoding_bindings::*;
+pub mod transcoding;
 
 #[allow(non_upper_case_globals)]
 #[allow(non_camel_case_types)]
@@ -14,6 +12,4 @@ pub use transcoding_bindings::*;
 #[allow(deref_nullptr)]
 #[rustfmt::skip]
 #[cfg(feature = "encoding")]
-mod encoding_bindings;
-#[cfg(feature = "encoding")]
-pub use encoding_bindings::*;
+pub mod encoding;
