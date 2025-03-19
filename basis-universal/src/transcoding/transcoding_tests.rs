@@ -26,14 +26,14 @@ fn test_get_texture_type_name() {
 
 #[test]
 fn test_new_transcoder() {
-    let transcoder = Transcoder::new();
+    let transcoder = BasisUniversalTranscoder::new();
     std::mem::drop(transcoder);
 }
 
 #[test]
 fn test_transcoder_get_total_images() {
     let basis_file = include_bytes!("../../test_assets/rust-logo-etc.basis");
-    let transcoder = Transcoder::new();
+    let transcoder = BasisUniversalTranscoder::new();
     assert_eq!(transcoder.image_count(basis_file), 1);
     std::mem::drop(transcoder);
 }
@@ -41,7 +41,7 @@ fn test_transcoder_get_total_images() {
 #[test]
 fn test_transcoder_info() {
     let basis_file = include_bytes!("../../test_assets/rust-logo-etc.basis");
-    let transcoder = Transcoder::new();
+    let transcoder = BasisUniversalTranscoder::new();
 
     let file_info = transcoder.file_info(basis_file).unwrap();
 
@@ -75,7 +75,7 @@ fn test_transcoder_info() {
 #[test]
 fn test_transcoder_get_tex_format() {
     let basis_file = include_bytes!("../../test_assets/rust-logo-etc.basis");
-    let transcoder = Transcoder::new();
+    let transcoder = BasisUniversalTranscoder::new();
     assert_eq!(
         transcoder.basis_texture_format(basis_file),
         BasisTextureFormat::ETC1S
@@ -83,7 +83,7 @@ fn test_transcoder_get_tex_format() {
     std::mem::drop(transcoder);
 
     let basis_file = include_bytes!("../../test_assets/rust-logo-uastc.basis");
-    let transcoder = Transcoder::new();
+    let transcoder = BasisUniversalTranscoder::new();
     assert_eq!(
         transcoder.basis_texture_format(basis_file),
         BasisTextureFormat::UASTC4x4
@@ -94,7 +94,7 @@ fn test_transcoder_get_tex_format() {
 #[test]
 fn test_transcoder_get_total_image_levels() {
     let basis_file = include_bytes!("../../test_assets/rust-logo-etc.basis");
-    let transcoder = Transcoder::new();
+    let transcoder = BasisUniversalTranscoder::new();
     assert_eq!(transcoder.image_level_count(basis_file, 0), 7);
     std::mem::drop(transcoder);
 }
@@ -116,14 +116,14 @@ fn do_test_transcoder_transcode(
     basis_file: &[u8],
     _out_path: &str,
 ) {
-    let mut transcoder = Transcoder::new();
+    let mut transcoder = BasisUniversalTranscoder::new();
     transcoder.prepare_transcoding(basis_file).unwrap();
 
     transcoder
         .transcode_image_level(
             basis_file,
             TranscoderTextureFormat::ETC1_RGB,
-            TranscodeParameters {
+            BasisUniversalTranscodeParameters {
                 image_index: 0,
                 level_index: 0,
                 ..Default::default()
@@ -135,7 +135,7 @@ fn do_test_transcoder_transcode(
         .transcode_image_level(
             basis_file,
             TranscoderTextureFormat::ASTC_4x4_RGBA,
-            TranscodeParameters {
+            BasisUniversalTranscodeParameters {
                 image_index: 0,
                 level_index: 0,
                 ..Default::default()
@@ -148,7 +148,7 @@ fn do_test_transcoder_transcode(
             .transcode_image_level(
                 basis_file,
                 TranscoderTextureFormat::FXT1_RGB,
-                TranscodeParameters {
+                BasisUniversalTranscodeParameters {
                     image_index: 0,
                     level_index: 0,
                     ..Default::default()
@@ -161,7 +161,7 @@ fn do_test_transcoder_transcode(
         .transcode_image_level(
             basis_file,
             TranscoderTextureFormat::RGBA32,
-            TranscodeParameters {
+            BasisUniversalTranscodeParameters {
                 image_index: 0,
                 level_index: 0,
                 ..Default::default()
