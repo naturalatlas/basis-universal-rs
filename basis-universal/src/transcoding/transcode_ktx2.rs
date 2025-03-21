@@ -257,7 +257,6 @@ impl<'data> Ktx2Transcoder<'data> {
         let required_buffer_bytes = target_format.calculate_minimum_output_buffer_bytes(
             level_info.orig_width,
             level_info.orig_height,
-            level_info.total_blocks,
             transcode_parameters.output_row_pitch_in_blocks_or_pixels,
             transcode_parameters.output_rows_in_pixels,
         ) as usize;

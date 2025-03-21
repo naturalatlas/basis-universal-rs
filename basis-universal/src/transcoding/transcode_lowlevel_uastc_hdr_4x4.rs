@@ -27,15 +27,14 @@ impl LowLevelUastcHdr4x4Transcoder {
         let channel0 = 0;
         let channel1 = 3;
 
+        let (output_block_width, _) = transcode_block_format.block_size();
         let output_row_pitch_in_blocks_or_pixels =
-            (slice_parameters.original_width + transcode_block_format.block_width() - 1)
-                / transcode_block_format.block_width();
+            slice_parameters.original_width.div_ceil(output_block_width);
         let output_rows_in_pixels = slice_parameters.original_height;
-        let total_slice_blocks = slice_parameters.num_blocks_x * slice_parameters.num_blocks_y;
+
         let required_buffer_bytes = transcode_block_format.calculate_minimum_output_buffer_bytes(
             slice_parameters.original_width,
             slice_parameters.original_height,
-            total_slice_blocks,
             Some(output_row_pitch_in_blocks_or_pixels),
             Some(output_rows_in_pixels),
         ) as usize;

@@ -327,7 +327,6 @@ impl BasisUniversalTranscoder {
         let required_buffer_bytes = transcode_format.calculate_minimum_output_buffer_bytes(
             description.original_width,
             description.original_height,
-            description.block_count,
             transcode_parameters.output_row_pitch_in_blocks_or_pixels,
             transcode_parameters.output_rows_in_pixels,
         ) as usize;

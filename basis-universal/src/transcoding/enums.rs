@@ -215,6 +215,11 @@ impl TranscoderTextureFormat {
         unsafe { sys::basis_get_uncompressed_bytes_per_pixel(self.into()) }
     }
 
+    /// Returns the block width and height for the specified texture format.
+    pub fn block_size(self) -> (u32, u32) {
+        (self.block_width(), self.block_height())
+    }
+
     /// Returns the block width for the specified texture format, which is currently either 4 or 8 for FXT1.
     pub fn block_width(self) -> u32 {
         unsafe { sys::basis_get_block_width(self.into()) }
@@ -256,7 +261,6 @@ impl TranscoderTextureFormat {
         self,
         original_width: u32,
         original_height: u32,
-        total_slice_blocks: u32,
         output_row_pitch_in_blocks_or_pixels: Option<u32>,
         output_rows_in_pixels: Option<u32>,
     ) -> u32 {
@@ -266,6 +270,8 @@ impl TranscoderTextureFormat {
         let mut output_rows_in_pixels = output_rows_in_pixels.unwrap_or(0);
 
         // Derived from implementation of basis_validate_output_buffer_size
+        // https://github.com/BinomialLLC/basis_universal/blob/2da6664eab159fc116100dce760db76cb34cfb47/transcoder/basisu_transcoder.cpp#L9354
+
         let minimum_output_buffer_blocks_or_pixels = if !self.is_compressed() {
             // Assume the output buffer is orig_width by orig_height
             if output_row_pitch_in_blocks_or_pixels == 0 {
@@ -277,12 +283,11 @@ impl TranscoderTextureFormat {
             }
 
             output_rows_in_pixels * output_row_pitch_in_blocks_or_pixels
-        } else if self == TranscoderTextureFormat::FXT1_RGB {
-            let num_blocks_fxt1_x = (original_width + 7) / 8;
-            let num_blocks_fxt1_y = (original_height + 3) / 4;
-            num_blocks_fxt1_x * num_blocks_fxt1_y
         } else {
-            total_slice_blocks
+            let (block_width, block_height) = self.block_size();
+            let num_dst_blocks_x = original_width.div_ceil(block_width);
+            let num_dst_blocks_y = original_height.div_ceil(block_height);
+            num_dst_blocks_x * num_dst_blocks_y
         };
 
         debug_assert!(self.validate_output_buffer_size(
@@ -301,14 +306,12 @@ impl TranscoderTextureFormat {
         self,
         original_width: u32,
         original_height: u32,
-        total_slice_blocks: u32,
         output_row_pitch_in_blocks_or_pixels: Option<u32>,
         output_rows_in_pixels: Option<u32>,
     ) -> u32 {
         self.calculate_minimum_output_buffer_blocks_or_pixels(
             original_width,
             original_height,
-            total_slice_blocks,
             output_row_pitch_in_blocks_or_pixels,
             output_rows_in_pixels,
         ) * self.bytes_per_block_or_pixel()
@@ -499,21 +502,29 @@ impl TranscoderBlockFormat {
         unsafe { !sys::basis_block_format_is_uncompressed(self.into()) }
     }
 
-    /// Returns the block width for the specified texture format, which is currently either 4, 6, or 8 for FXT1.
-    pub fn block_width(self) -> u32 {
-        match self {
-            TranscoderBlockFormat::FXT1_RGB => 8,
-            TranscoderBlockFormat::ASTC_HDR_6x6 => 6,
-            _ => 4,
+    /// Returns the block width and height for the specified texture format.
+    pub fn block_size(self) -> (u32, u32) {
+        if self.is_compressed() {
+            match self {
+                TranscoderBlockFormat::FXT1_RGB => (8, 4),
+                TranscoderBlockFormat::ASTC_HDR_6x6 => (6, 6),
+                _ => (4, 4),
+            }
+        } else {
+            (1, 1)
         }
     }
 
+    /// Returns the block width for the specified texture format, which is currently either 4, 6, or 8 for FXT1.
+    #[deprecated(note = "Use the block_size method instead", since = "0.4.0")]
+    pub fn block_width(self) -> u32 {
+        self.block_size().0
+    }
+
     /// Returns the block height for the specified texture format.
+    #[deprecated(note = "Use the block_size method instead", since = "0.4.0")]
     pub fn block_height(self) -> u32 {
-        match self {
-            TranscoderBlockFormat::ASTC_HDR_6x6 => 6,
-            _ => 4,
-        }
+        self.block_size().1
     }
 
     /// Calculate the minimum output buffer required to store transcoded data in blocks for
@@ -522,11 +533,11 @@ impl TranscoderBlockFormat {
         self,
         original_width: u32,
         original_height: u32,
-        total_slice_blocks: u32,
         output_row_pitch_in_blocks_or_pixels: Option<u32>,
         output_rows_in_pixels: Option<u32>,
     ) -> u32 {
         // Derived from implementation of basis_validate_output_buffer_size
+        // https://github.com/BinomialLLC/basis_universal/blob/2da6664eab159fc116100dce760db76cb34cfb47/transcoder/basisu_transcoder.cpp#L9354
 
         if !self.is_compressed() {
             // Default of 0 is fine for these values
@@ -544,18 +555,12 @@ impl TranscoderBlockFormat {
             }
 
             output_rows_in_pixels * output_row_pitch_in_blocks_or_pixels
-        } else if matches!(
-            self,
-            TranscoderBlockFormat::FXT1_RGB | TranscoderBlockFormat::ASTC_HDR_6x6
-        ) {
-            let dst_block_width = self.block_width();
-            let dst_block_height = self.block_height();
-            let num_dst_blocks_x = (original_width + dst_block_width - 1) / dst_block_width;
-            let num_dst_blocks_y = (original_height + dst_block_height - 1) / dst_block_height;
+        } else {
+            let (dst_block_width, dst_block_height) = self.block_size();
+            let num_dst_blocks_x = original_width.div_ceil(dst_block_width);
+            let num_dst_blocks_y = original_height.div_ceil(dst_block_height);
             let total_dst_blocks = num_dst_blocks_x * num_dst_blocks_y;
             total_dst_blocks
-        } else {
-            total_slice_blocks
         }
     }
 
@@ -564,14 +569,12 @@ impl TranscoderBlockFormat {
         self,
         original_width: u32,
         original_height: u32,
-        total_slice_blocks: u32,
         output_row_pitch_in_blocks_or_pixels: Option<u32>,
         output_rows_in_pixels: Option<u32>,
     ) -> u32 {
         self.calculate_minimum_output_buffer_blocks_or_pixels(
             original_width,
             original_height,
-            total_slice_blocks,
             output_row_pitch_in_blocks_or_pixels,
             output_rows_in_pixels,
         ) * self.bytes_per_block_or_pixel()
