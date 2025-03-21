@@ -6,6 +6,7 @@ fn build_with_common_settings() -> cc::Build {
         .flag_if_supported("-fno-strict-aliasing")
         .flag_if_supported("-Wall")
         .flag_if_supported("-Wextra")
+        .flag_if_supported("-Wno-bitwise-instead-of-logical")
         .flag_if_supported("-Wno-unknown-warning-option")
         .flag_if_supported("-Wno-unused-function")
         .flag_if_supported("-Wno-unused-but-set-variable")
