@@ -233,6 +233,23 @@ impl TranscoderTextureFormat {
         basis_texture_format.can_transcode_to_format(self)
     }
 
+    /// Computes the size in bytes of a transcoded image or texture, taking into account the format's block width/height and any minimum size PVRTC1 requirements required by OpenGL.
+    /// Note the returned value is not necessarily the # of bytes a transcoder could write to the output buffer due to these minimum PVRTC1 requirements.
+    /// (These PVRTC1 requirements are not ours, but OpenGL's.)
+    pub fn compute_transcoded_image_size_in_bytes(
+        self,
+        original_width: u32,
+        original_height: u32,
+    ) -> u32 {
+        unsafe {
+            sys::basist_basis_compute_transcoded_image_size_in_bytes(
+                self.into(),
+                original_width,
+                original_height,
+            )
+        }
+    }
+
     /// Calculate the minimum output buffer required to store transcoded data in blocks for
     /// compressed formats and pixels for uncompressed formats
     pub fn calculate_minimum_output_buffer_blocks_or_pixels(

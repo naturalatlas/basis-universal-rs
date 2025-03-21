@@ -166,6 +166,14 @@ pub const basist_transcoder_texture_format_cTFASTC_4x4: basist_transcoder_textur
 pub const basist_transcoder_texture_format_cTFATC_RGBA_INTERPOLATED_ALPHA:
     basist_transcoder_texture_format = 12;
 pub type basist_transcoder_texture_format = ::std::os::raw::c_int;
+unsafe extern "C" {
+    #[link_name = "\u{1}__ZN6basist44basis_compute_transcoded_image_size_in_bytesENS_25transcoder_texture_formatEjj"]
+    pub fn basist_basis_compute_transcoded_image_size_in_bytes(
+        target_format: basist_transcoder_texture_format,
+        orig_width: u32,
+        orig_height: u32,
+    ) -> u32;
+}
 #[repr(C)]
 #[repr(align(8))]
 pub struct basist_basisu_transcoder_state {

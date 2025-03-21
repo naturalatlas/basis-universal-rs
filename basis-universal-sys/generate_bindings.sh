@@ -72,6 +72,7 @@ bindgen vendor/transcode_wrapper.cpp -o src/transcoding.rs \
   --opaque-type Ktx2Transcoder \
   --opaque-type basist::block_format \
   --opaque-type basist::basisu_transcoder_state \
+  --allowlist-function basist::basis_compute_transcoded_image_size_in_bytes \
   \
   -- -x c++ -std=c++17
 
