@@ -26,7 +26,7 @@ fn main() {
         .flag_if_supported("--std=c++17")
         .define("BASISU_SUPPORT_SSE", "0");
 
-    build.define("BASISU_FORCE_DEVEL_MESSAGES", "1");
+    // build.define("BASISU_FORCE_DEVEL_MESSAGES", "1");
 
     // build
     //     .define("BASISD_SUPPORT_DXT1", "0")
