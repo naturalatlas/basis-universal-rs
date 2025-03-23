@@ -247,7 +247,7 @@ impl TranscoderTextureFormat {
         original_height: u32,
     ) -> u32 {
         unsafe {
-            sys::basist_basis_compute_transcoded_image_size_in_bytes(
+            sys::basis_compute_transcoded_image_size_in_bytes(
                 self.into(),
                 original_width,
                 original_height,

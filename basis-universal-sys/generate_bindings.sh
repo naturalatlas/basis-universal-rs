@@ -6,6 +6,7 @@ bindgen vendor/transcode_wrapper.cpp -o src/transcoding.rs \
   --allowlist-function basis_get_basisu_texture_format \
   --allowlist-function basis_get_texture_type_name \
   --allowlist-function basis_validate_output_buffer_size \
+  --allowlist-function basis_compute_transcoded_image_size_in_bytes \
   \
   --allowlist-function basis_transcoder_format_is_uncompressed \
   --allowlist-function basis_block_format_is_uncompressed \
@@ -72,7 +73,6 @@ bindgen vendor/transcode_wrapper.cpp -o src/transcoding.rs \
   --opaque-type Ktx2Transcoder \
   --opaque-type basist::block_format \
   --opaque-type basist::basisu_transcoder_state \
-  --allowlist-function basist::basis_compute_transcoded_image_size_in_bytes \
   \
   -- -x c++ -std=c++17
 
