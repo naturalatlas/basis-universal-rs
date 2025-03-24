@@ -162,6 +162,25 @@ impl<'data> Ktx2Transcoder<'data> {
         unsafe { sys::ktx2_get_faces(self.transcoder) }
     }
 
+    pub fn dfd_channel_id0(&self) -> sys::basist_ktx2_df_channel_id {
+        unsafe { sys::ktx2_get_dfd_channel_id0(self.transcoder) }
+    }
+    pub fn dfd_channel_id1(&self) -> sys::basist_ktx2_df_channel_id {
+        unsafe { sys::ktx2_get_dfd_channel_id1(self.transcoder) }
+    }
+    pub fn dfd_color_primaries(&self) -> sys::basist_ktx2_df_color_primaries {
+        unsafe { sys::ktx2_get_dfd_color_primaries(self.transcoder) }
+    }
+    pub fn dfd_color_model(&self) -> u32 {
+        unsafe { sys::ktx2_get_dfd_color_model(self.transcoder) }
+    }
+    pub fn dfd_flags(&self) -> u32 {
+        unsafe { sys::ktx2_get_dfd_flags(self.transcoder) }
+    }
+    pub fn dfd_total_samples(&self) -> u32 {
+        unsafe { sys::ktx2_get_dfd_total_samples(self.transcoder) }
+    }
+
     /// Returns information about the specified image's mipmap level.
     pub fn image_level_info(
         &self,
@@ -335,5 +354,81 @@ impl Drop for Ktx2Transcoder<'_> {
         unsafe {
             sys::ktx2_transcoder_delete(self.transcoder);
         }
+    }
+}
+
+#[allow(non_camel_case_types)]
+#[derive(Copy, Clone, Debug, PartialEq)]
+#[repr(u32)]
+pub enum Ktx2Etc1sDfdChannelId {
+    RGB = sys::basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_ETC1S_RGB,
+    RRR = sys::basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_ETC1S_RRR,
+    GGG = sys::basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_ETC1S_GGG,
+    AAA = sys::basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_ETC1S_AAA,
+}
+
+impl Into<sys::basist_ktx2_df_channel_id> for Ktx2Etc1sDfdChannelId {
+    fn into(self) -> sys::basist_ktx2_df_channel_id {
+        self as sys::basist_ktx2_df_channel_id
+    }
+}
+
+impl From<sys::basist_ktx2_df_channel_id> for Ktx2Etc1sDfdChannelId {
+    fn from(value: sys::basist_ktx2_df_channel_id) -> Self {
+        unsafe { std::mem::transmute(value as u32) }
+    }
+}
+
+#[allow(non_camel_case_types)]
+#[derive(Copy, Clone, Debug, PartialEq)]
+#[repr(u32)]
+pub enum Ktx2UastcDfdChannelId {
+    RGB = sys::basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_UASTC_RGB,
+    RGBA = sys::basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_UASTC_RGBA,
+    RRR = sys::basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_UASTC_RRR,
+    RRRG = sys::basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_UASTC_RRRG,
+    RG = sys::basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_UASTC_RG,
+}
+
+impl Into<sys::basist_ktx2_df_channel_id> for Ktx2UastcDfdChannelId {
+    fn into(self) -> sys::basist_ktx2_df_channel_id {
+        self as sys::basist_ktx2_df_channel_id
+    }
+}
+
+impl From<sys::basist_ktx2_df_channel_id> for Ktx2UastcDfdChannelId {
+    fn from(value: sys::basist_ktx2_df_channel_id) -> Self {
+        unsafe { std::mem::transmute(value as u32) }
+    }
+}
+
+#[allow(non_camel_case_types)]
+#[derive(Copy, Clone, Debug, PartialEq)]
+#[repr(u32)]
+pub enum Ktx2DfdColorPrimaries {
+    UNSPECIFIED = sys::basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_UNSPECIFIED,
+    /// Also known as `BT709` (synonymous)
+    SRGB = sys::basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_SRGB,
+    BT601_EBU = sys::basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_BT601_EBU,
+    BT601_SMPTE = sys::basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_BT601_SMPTE,
+    BT2020 = sys::basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_BT2020,
+    CIEXYZ = sys::basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_CIEXYZ,
+    ACES = sys::basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_ACES,
+    ACESCC = sys::basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_ACESCC,
+    NTSC1953 = sys::basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_NTSC1953,
+    PAL525 = sys::basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_PAL525,
+    DISPLAYP3 = sys::basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_DISPLAYP3,
+    ADOBERGB = sys::basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_ADOBERGB,
+}
+
+impl Into<sys::basist_ktx2_df_color_primaries> for Ktx2DfdColorPrimaries {
+    fn into(self) -> sys::basist_ktx2_df_color_primaries {
+        self as sys::basist_ktx2_df_color_primaries
+    }
+}
+
+impl From<sys::basist_ktx2_df_color_primaries> for Ktx2DfdColorPrimaries {
+    fn from(value: sys::basist_ktx2_df_color_primaries) -> Self {
+        unsafe { std::mem::transmute(value as u32) }
     }
 }

@@ -330,6 +330,42 @@ const _: () = {
     ["Offset of field: basist_basisu_image_level_info::m_iframe_flag"]
         [::std::mem::offset_of!(basist_basisu_image_level_info, m_iframe_flag) - 65usize];
 };
+pub const basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_ETC1S_RGB: basist_ktx2_df_channel_id = 0;
+pub const basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_ETC1S_RRR: basist_ktx2_df_channel_id = 3;
+pub const basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_ETC1S_GGG: basist_ktx2_df_channel_id = 4;
+pub const basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_ETC1S_AAA: basist_ktx2_df_channel_id = 15;
+pub const basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_UASTC_DATA: basist_ktx2_df_channel_id = 0;
+pub const basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_UASTC_RGB: basist_ktx2_df_channel_id = 0;
+pub const basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_UASTC_RGBA: basist_ktx2_df_channel_id = 3;
+pub const basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_UASTC_RRR: basist_ktx2_df_channel_id = 4;
+pub const basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_UASTC_RRRG: basist_ktx2_df_channel_id = 5;
+pub const basist_ktx2_df_channel_id_KTX2_DF_CHANNEL_UASTC_RG: basist_ktx2_df_channel_id = 6;
+pub type basist_ktx2_df_channel_id = ::std::os::raw::c_uint;
+pub const basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_UNSPECIFIED:
+    basist_ktx2_df_color_primaries = 0;
+pub const basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_BT709: basist_ktx2_df_color_primaries =
+    1;
+pub const basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_SRGB: basist_ktx2_df_color_primaries = 1;
+pub const basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_BT601_EBU:
+    basist_ktx2_df_color_primaries = 2;
+pub const basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_BT601_SMPTE:
+    basist_ktx2_df_color_primaries = 3;
+pub const basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_BT2020: basist_ktx2_df_color_primaries =
+    4;
+pub const basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_CIEXYZ: basist_ktx2_df_color_primaries =
+    5;
+pub const basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_ACES: basist_ktx2_df_color_primaries = 6;
+pub const basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_ACESCC: basist_ktx2_df_color_primaries =
+    7;
+pub const basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_NTSC1953:
+    basist_ktx2_df_color_primaries = 8;
+pub const basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_PAL525: basist_ktx2_df_color_primaries =
+    9;
+pub const basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_DISPLAYP3:
+    basist_ktx2_df_color_primaries = 10;
+pub const basist_ktx2_df_color_primaries_KTX2_DF_PRIMARIES_ADOBERGB:
+    basist_ktx2_df_color_primaries = 11;
+pub type basist_ktx2_df_color_primaries = ::std::os::raw::c_uint;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct basist_ktx2_image_level_info {
@@ -671,6 +707,28 @@ unsafe extern "C" {
 }
 unsafe extern "C" {
     pub fn ktx2_get_has_alpha(transcoder: *const Ktx2Transcoder) -> bool;
+}
+unsafe extern "C" {
+    pub fn ktx2_get_dfd_channel_id0(transcoder: *const Ktx2Transcoder)
+        -> basist_ktx2_df_channel_id;
+}
+unsafe extern "C" {
+    pub fn ktx2_get_dfd_channel_id1(transcoder: *const Ktx2Transcoder)
+        -> basist_ktx2_df_channel_id;
+}
+unsafe extern "C" {
+    pub fn ktx2_get_dfd_color_primaries(
+        transcoder: *const Ktx2Transcoder
+    ) -> basist_ktx2_df_color_primaries;
+}
+unsafe extern "C" {
+    pub fn ktx2_get_dfd_color_model(transcoder: *const Ktx2Transcoder) -> u32;
+}
+unsafe extern "C" {
+    pub fn ktx2_get_dfd_flags(transcoder: *const Ktx2Transcoder) -> u32;
+}
+unsafe extern "C" {
+    pub fn ktx2_get_dfd_total_samples(transcoder: *const Ktx2Transcoder) -> u32;
 }
 unsafe extern "C" {
     pub fn ktx2_get_block_width(transcoder: *const Ktx2Transcoder) -> u32;

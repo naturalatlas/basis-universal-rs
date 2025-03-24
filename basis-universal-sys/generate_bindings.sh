@@ -46,6 +46,12 @@ bindgen vendor/transcode_wrapper.cpp -o src/transcoding.rs \
   --allowlist-function ktx2_start_transcoding \
   --allowlist-function ktx2_get_image_level_info \
   --allowlist-function ktx2_transcoder_transcode_image_level \
+  --allowlist-function ktx2_get_dfd_channel_id0 \
+  --allowlist-function ktx2_get_dfd_channel_id1 \
+  --allowlist-function ktx2_get_dfd_color_primaries \
+  --allowlist-function ktx2_get_dfd_color_model \
+  --allowlist-function ktx2_get_dfd_flags \
+  --allowlist-function ktx2_get_dfd_total_samples \
   \
   --allowlist-function basis_universal_transcoder_new \
   --allowlist-function basis_universal_transcoder_delete \

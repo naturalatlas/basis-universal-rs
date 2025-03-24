@@ -46,13 +46,31 @@ extern "C" {
         return transcoder->pTranscoder->is_etc1s();
     }
     bool ktx2_get_is_srgb(const Ktx2Transcoder *transcoder) {
-        return transcoder->pTranscoder->get_dfd_transfer_func() == 2;
+        return transcoder->pTranscoder->get_dfd_transfer_func() == basist::KTX2_KHR_DF_TRANSFER_SRGB;
     }
     bool ktx2_get_is_linear(const Ktx2Transcoder *transcoder) {
-        return transcoder->pTranscoder->get_dfd_transfer_func() == 1;
+        return transcoder->pTranscoder->get_dfd_transfer_func() == basist::KTX2_KHR_DF_TRANSFER_LINEAR;
     }
     bool ktx2_get_has_alpha(const Ktx2Transcoder *transcoder) {
         return transcoder->pTranscoder->get_has_alpha() > 0;
+    }
+    basist::ktx2_df_channel_id ktx2_get_dfd_channel_id0(const Ktx2Transcoder *transcoder) {
+        return transcoder->pTranscoder->get_dfd_channel_id0();
+    }
+    basist::ktx2_df_channel_id ktx2_get_dfd_channel_id1(const Ktx2Transcoder *transcoder) {
+        return transcoder->pTranscoder->get_dfd_channel_id1();
+    }
+    basist::ktx2_df_color_primaries ktx2_get_dfd_color_primaries(const Ktx2Transcoder *transcoder) {
+        return transcoder->pTranscoder->get_dfd_color_primaries();
+    }
+    uint32_t ktx2_get_dfd_color_model(const Ktx2Transcoder *transcoder) {
+        return transcoder->pTranscoder->get_dfd_color_model();
+    }
+    uint32_t ktx2_get_dfd_flags(const Ktx2Transcoder *transcoder) {
+        return transcoder->pTranscoder->get_dfd_flags();
+    }
+    uint32_t ktx2_get_dfd_total_samples(const Ktx2Transcoder *transcoder) {
+        return transcoder->pTranscoder->get_dfd_total_samples();
     }
     uint32_t ktx2_get_block_width(const Ktx2Transcoder *transcoder) {
         return transcoder->pTranscoder->get_block_width();
@@ -93,7 +111,7 @@ extern "C" {
         Ktx2Transcoder *transcoder,
         uint32_t level_index,
         uint32_t layer_index,
-        uint32_t face_index, 
+        uint32_t face_index,
         void* pOutput_blocks,
         uint32_t output_blocks_buf_size_in_blocks_or_pixels,
         basist::transcoder_texture_format fmt,
@@ -107,7 +125,7 @@ extern "C" {
         return transcoder->pTranscoder->transcode_image_level(
             level_index,
             layer_index,
-            face_index, 
+            face_index,
             pOutput_blocks,
             output_blocks_buf_size_in_blocks_or_pixels,
             fmt,
