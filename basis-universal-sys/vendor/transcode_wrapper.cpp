@@ -86,9 +86,9 @@ extern "C" {
         );
     }
 
-    // Computes the size in bytes of a transcoded image or texture, taking into account the format's block width/height and any minimum size PVRTC1 requirements required by OpenGL.
-	// Note the returned value is not necessarily the # of bytes a transcoder could write to the output buffer due to these minimum PVRTC1 requirements.
-	// (These PVRTC1 requirements are not ours, but OpenGL's.)
+    // "Computes the size in bytes of a transcoded image or texture, taking into account the format's block width/height and any minimum size PVRTC1 requirements required by OpenGL.
+    // Note the returned value is not necessarily the # of bytes a transcoder could write to the output buffer due to these minimum PVRTC1 requirements.
+    // (These PVRTC1 requirements are not ours, but OpenGL's.)"
     uint32_t basis_compute_transcoded_image_size_in_bytes(
         basist::transcoder_texture_format target_format,
         uint32_t orig_width,
