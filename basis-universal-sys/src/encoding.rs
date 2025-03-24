@@ -74,6 +74,17 @@ unsafe extern "C" {
         ...
     );
 }
+#[repr(C)]
+#[repr(align(8))]
+#[derive(Debug, Copy, Clone)]
+pub struct basisu_imagef {
+    pub _bindgen_opaque_blob: [u64; 5usize],
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of basisu_imagef"][::std::mem::size_of::<basisu_imagef>() - 40usize];
+    ["Alignment of basisu_imagef"][::std::mem::align_of::<basisu_imagef>() - 8usize];
+};
 pub const basisu_TOTAL_PACK_UASTC_LEVELS: u32 = 5;
 pub const basisu_BASISU_MAX_SUPPORTED_TEXTURE_DIMENSION: u32 = 16384;
 pub const basisu_BASISU_DEFAULT_ENDPOINT_RDO_THRESH: f32 = 1.5;
@@ -89,6 +100,11 @@ pub const basisu_BASISU_MAX_SLICES: u32 = 16777215;
 pub const basisu_BASISU_RDO_UASTC_DICT_SIZE_DEFAULT: ::std::os::raw::c_int = 4096;
 pub const basisu_BASISU_RDO_UASTC_DICT_SIZE_MIN: ::std::os::raw::c_int = 64;
 pub const basisu_BASISU_RDO_UASTC_DICT_SIZE_MAX: ::std::os::raw::c_int = 65536;
+pub const basisu_hdr_modes_cUASTC_HDR_4X4: basisu_hdr_modes = 0;
+pub const basisu_hdr_modes_cASTC_HDR_6X6: basisu_hdr_modes = 1;
+pub const basisu_hdr_modes_cASTC_HDR_6X6_INTERMEDIATE: basisu_hdr_modes = 2;
+pub const basisu_hdr_modes_cTotal: basisu_hdr_modes = 3;
+pub type basisu_hdr_modes = ::std::os::raw::c_int;
 pub const basisu_basis_compressor_error_code_cECSuccess: basisu_basis_compressor_error_code = 0;
 pub const basisu_basis_compressor_error_code_cECFailedInitializing:
     basisu_basis_compressor_error_code = 1;
@@ -120,6 +136,11 @@ pub const basist_basis_tex_format_cASTC_HDR_6x6: basist_basis_tex_format = 3;
 pub const basist_basis_tex_format_cASTC_HDR_6x6_INTERMEDIATE: basist_basis_tex_format = 4;
 pub const basist_basis_tex_format_cTotalFormats: basist_basis_tex_format = 5;
 pub type basist_basis_tex_format = ::std::os::raw::c_int;
+pub const basist_ktx2_supercompression_KTX2_SS_NONE: basist_ktx2_supercompression = 0;
+pub const basist_ktx2_supercompression_KTX2_SS_BASISLZ: basist_ktx2_supercompression = 1;
+pub const basist_ktx2_supercompression_KTX2_SS_ZSTANDARD: basist_ktx2_supercompression = 2;
+pub const basist_ktx2_supercompression_KTX2_SS_BASIS: basist_ktx2_supercompression = 3;
+pub type basist_ktx2_supercompression = ::std::os::raw::c_uint;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union ColorU8 {
@@ -152,6 +173,36 @@ const _: () = {
     ["Offset of field: ColorU8::components"][::std::mem::offset_of!(ColorU8, components) - 0usize];
     ["Offset of field: ColorU8::combined"][::std::mem::offset_of!(ColorU8, combined) - 0usize];
 };
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union ColorF {
+    pub channels: ColorF_Channels,
+    pub components: [f32; 4usize],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct ColorF_Channels {
+    pub r: f32,
+    pub g: f32,
+    pub b: f32,
+    pub a: f32,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ColorF_Channels"][::std::mem::size_of::<ColorF_Channels>() - 16usize];
+    ["Alignment of ColorF_Channels"][::std::mem::align_of::<ColorF_Channels>() - 4usize];
+    ["Offset of field: ColorF_Channels::r"][::std::mem::offset_of!(ColorF_Channels, r) - 0usize];
+    ["Offset of field: ColorF_Channels::g"][::std::mem::offset_of!(ColorF_Channels, g) - 4usize];
+    ["Offset of field: ColorF_Channels::b"][::std::mem::offset_of!(ColorF_Channels, b) - 8usize];
+    ["Offset of field: ColorF_Channels::a"][::std::mem::offset_of!(ColorF_Channels, a) - 12usize];
+};
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of ColorF"][::std::mem::size_of::<ColorF>() - 16usize];
+    ["Alignment of ColorF"][::std::mem::align_of::<ColorF>() - 4usize];
+    ["Offset of field: ColorF::channels"][::std::mem::offset_of!(ColorF, channels) - 0usize];
+    ["Offset of field: ColorF::components"][::std::mem::offset_of!(ColorF, components) - 0usize];
+};
 pub const UastcPackFlags_PackUASTCLevelFastest: UastcPackFlags = 0;
 pub const UastcPackFlags_PackUASTCLevelFaster: UastcPackFlags = 1;
 pub const UastcPackFlags_PackUASTCLevelDefault: UastcPackFlags = 2;
@@ -164,9 +215,6 @@ pub const UastcPackFlags_PackUASTCETC1FasterHints: UastcPackFlags = 64;
 pub const UastcPackFlags_PackUASTCETC1FastestHints: UastcPackFlags = 128;
 pub const UastcPackFlags_PackUASTCETC1DisableFlipAndIndividual: UastcPackFlags = 256;
 pub type UastcPackFlags = ::std::os::raw::c_uint;
-unsafe extern "C" {
-    pub fn image_clear(image: *mut basisu_image);
-}
 unsafe extern "C" {
     pub fn image_resize_with_pitch(
         image: *mut basisu_image,
@@ -237,6 +285,9 @@ unsafe extern "C" {
         h: u32,
     ) -> u32;
 }
+unsafe extern "C" {
+    pub fn image_clear(image: *mut basisu_image);
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct PixelData {
@@ -252,6 +303,96 @@ const _: () = {
 };
 unsafe extern "C" {
     pub fn image_get_pixel_data(image: *mut basisu_image) -> PixelData;
+}
+unsafe extern "C" {
+    pub fn imagef_resize_with_pitch(
+        image: *mut basisu_imagef,
+        w: u32,
+        h: u32,
+        p: u32,
+    );
+}
+unsafe extern "C" {
+    pub fn imagef_resize(
+        image: *mut basisu_imagef,
+        w: u32,
+        h: u32,
+    );
+}
+unsafe extern "C" {
+    pub fn imagef_init(
+        image: *mut basisu_imagef,
+        pData: *const f32,
+        width: u32,
+        height: u32,
+        comps: u32,
+    );
+}
+unsafe extern "C" {
+    pub fn imagef_get_pixel_at_checked(
+        image: *mut basisu_imagef,
+        x: u32,
+        y: u32,
+        pOutColor: *mut ColorF,
+    ) -> bool;
+}
+unsafe extern "C" {
+    pub fn imagef_get_pixel_at_unchecked(
+        image: *mut basisu_imagef,
+        x: u32,
+        y: u32,
+    ) -> ColorF;
+}
+unsafe extern "C" {
+    pub fn imagef_get_width(image: *mut basisu_imagef) -> u32;
+}
+unsafe extern "C" {
+    pub fn imagef_get_height(image: *mut basisu_imagef) -> u32;
+}
+unsafe extern "C" {
+    pub fn imagef_get_pitch(image: *mut basisu_imagef) -> u32;
+}
+unsafe extern "C" {
+    pub fn imagef_get_total_pixels(image: *mut basisu_imagef) -> u32;
+}
+unsafe extern "C" {
+    pub fn imagef_get_block_width(
+        image: *mut basisu_imagef,
+        w: u32,
+    ) -> u32;
+}
+unsafe extern "C" {
+    pub fn imagef_get_block_height(
+        image: *mut basisu_imagef,
+        h: u32,
+    ) -> u32;
+}
+unsafe extern "C" {
+    pub fn imagef_get_total_blocks(
+        image: *mut basisu_imagef,
+        w: u32,
+        h: u32,
+    ) -> u32;
+}
+unsafe extern "C" {
+    pub fn imagef_clear(image: *mut basisu_imagef);
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct HdrPixelData {
+    pub pData: *mut ColorF,
+    pub length: usize,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of HdrPixelData"][::std::mem::size_of::<HdrPixelData>() - 16usize];
+    ["Alignment of HdrPixelData"][::std::mem::align_of::<HdrPixelData>() - 8usize];
+    ["Offset of field: HdrPixelData::pData"][::std::mem::offset_of!(HdrPixelData, pData) - 0usize];
+    ["Offset of field: HdrPixelData::length"]
+        [::std::mem::offset_of!(HdrPixelData, length) - 8usize];
+};
+unsafe extern "C" {
+    pub fn imagef_get_pixel_data(image: *mut basisu_imagef) -> HdrPixelData;
 }
 #[repr(C)]
 #[repr(align(8))]
@@ -287,6 +428,21 @@ unsafe extern "C" {
 }
 unsafe extern "C" {
     pub fn compressor_params_clear_source_image_list(params: *mut CompressorParams);
+}
+unsafe extern "C" {
+    pub fn compressor_params_get_or_create_source_hdr_image(
+        params: *mut CompressorParams,
+        index: u32,
+    ) -> *mut basisu_imagef;
+}
+unsafe extern "C" {
+    pub fn compressor_params_resize_source_hdr_image_list(
+        params: *mut CompressorParams,
+        size: usize,
+    );
+}
+unsafe extern "C" {
+    pub fn compressor_params_clear_source_hdr_image_list(params: *mut CompressorParams);
 }
 unsafe extern "C" {
     pub fn compressor_params_get_or_create_source_mipmap_image(
@@ -393,6 +549,48 @@ unsafe extern "C" {
     );
 }
 unsafe extern "C" {
+    pub fn compressor_params_set_hdr(
+        params: *mut CompressorParams,
+        hdr: bool,
+    );
+}
+unsafe extern "C" {
+    pub fn compressor_params_set_hdr_mode(
+        params: *mut CompressorParams,
+        hdr_mode: basisu_hdr_modes,
+    );
+}
+unsafe extern "C" {
+    pub fn compressor_params_set_hdr_favor_astc(
+        params: *mut CompressorParams,
+        favor_astc: bool,
+    );
+}
+unsafe extern "C" {
+    pub fn compressor_params_set_create_ktx2_file(
+        params: *mut CompressorParams,
+        ktx2_file: bool,
+    );
+}
+unsafe extern "C" {
+    pub fn compressor_params_set_ktx2_srgb_transfer_func(
+        params: *mut CompressorParams,
+        srgb: bool,
+    );
+}
+unsafe extern "C" {
+    pub fn compressor_params_set_ktx2_uastc_supercompression(
+        params: *mut CompressorParams,
+        supercompression: basist_ktx2_supercompression,
+    );
+}
+unsafe extern "C" {
+    pub fn compressor_params_set_ktx2_zstd_supercompression_level(
+        params: *mut CompressorParams,
+        level: ::std::os::raw::c_int,
+    );
+}
+unsafe extern "C" {
     pub fn compressor_params_set_userdata(
         params: *mut CompressorParams,
         userdata0: u32,
@@ -442,6 +640,24 @@ const _: () = {
 };
 unsafe extern "C" {
     pub fn compressor_get_output_basis_file(compressor: *mut Compressor) -> CompressorBasisFile;
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct CompressorKtx2File {
+    pub pData: *const u8,
+    pub length: usize,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of CompressorKtx2File"][::std::mem::size_of::<CompressorKtx2File>() - 16usize];
+    ["Alignment of CompressorKtx2File"][::std::mem::align_of::<CompressorKtx2File>() - 8usize];
+    ["Offset of field: CompressorKtx2File::pData"]
+        [::std::mem::offset_of!(CompressorKtx2File, pData) - 0usize];
+    ["Offset of field: CompressorKtx2File::length"]
+        [::std::mem::offset_of!(CompressorKtx2File, length) - 8usize];
+};
+unsafe extern "C" {
+    pub fn compressor_get_output_ktx2_file(compressor: *mut Compressor) -> CompressorKtx2File;
 }
 unsafe extern "C" {
     pub fn compressor_get_basis_file_size(compressor: *const Compressor) -> u32;

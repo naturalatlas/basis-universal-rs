@@ -79,10 +79,18 @@ impl Compressor {
         }
     }
 
-    /// Access the compressed data. May be empty if `process()` was not yet called
+    /// Access the compressed data. May be empty if `process()` was not yet called.
     pub fn basis_file(&self) -> &[u8] {
         unsafe {
             let result = sys::compressor_get_output_basis_file(self.0);
+            std::slice::from_raw_parts(result.pData, result.length as usize)
+        }
+    }
+
+    /// Access the compressed data. May be empty if `process()` was not yet called.
+    pub fn ktx2_file(&self) -> &[u8] {
+        unsafe {
+            let result = sys::compressor_get_output_ktx2_file(self.0);
             std::slice::from_raw_parts(result.pData, result.length as usize)
         }
     }

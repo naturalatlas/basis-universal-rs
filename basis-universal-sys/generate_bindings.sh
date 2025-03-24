@@ -98,6 +98,21 @@ bindgen vendor/encode_wrapper.cpp -o src/encoding.rs \
   --allowlist-function image_get_total_blocks \
   --allowlist-function image_get_pixel_data \
   \
+  --allowlist-function imagef_clear \
+  --allowlist-function imagef_resize_with_pitch \
+  --allowlist-function imagef_resize \
+  --allowlist-function imagef_init \
+  --allowlist-function imagef_get_pixel_at_checked \
+  --allowlist-function imagef_get_pixel_at_unchecked \
+  --allowlist-function imagef_get_width \
+  --allowlist-function imagef_get_height \
+  --allowlist-function imagef_get_pitch \
+  --allowlist-function imagef_get_total_pixels \
+  --allowlist-function imagef_get_block_width \
+  --allowlist-function imagef_get_block_height \
+  --allowlist-function imagef_get_total_blocks \
+  --allowlist-function imagef_get_pixel_data \
+  \
   --allowlist-function compressor_params_new \
   --allowlist-function compressor_params_delete \
   --allowlist-function compressor_params_clear \
@@ -105,6 +120,10 @@ bindgen vendor/encode_wrapper.cpp -o src/encoding.rs \
   --allowlist-function compressor_params_get_or_create_source_image \
   --allowlist-function compressor_params_resize_source_image_list \
   --allowlist-function compressor_params_clear_source_image_list \
+  \
+  --allowlist-function compressor_params_get_or_create_source_hdr_image \
+  --allowlist-function compressor_params_resize_source_hdr_image_list \
+  --allowlist-function compressor_params_clear_source_hdr_image_list \
   \
   --allowlist-function compressor_params_get_or_create_source_mipmap_image \
   --allowlist-function compressor_params_resize_source_mipmap_image_list \
@@ -126,12 +145,20 @@ bindgen vendor/encode_wrapper.cpp -o src/encoding.rs \
   --allowlist-function compressor_params_set_mip_fast \
   --allowlist-function compressor_params_set_userdata \
   --allowlist-function compressor_params_set_format_mode \
+  --allowlist-function compressor_params_set_create_ktx2_file \
+  --allowlist-function compressor_params_set_ktx2_srgb_transfer_func \
+  --allowlist-function compressor_params_set_ktx2_uastc_supercompression \
+  --allowlist-function compressor_params_set_ktx2_zstd_supercompression_level \
+  --allowlist-function compressor_params_set_hdr \
+  --allowlist-function compressor_params_set_hdr_mode \
+  --allowlist-function compressor_params_set_hdr_favor_astc \
   \
   --allowlist-function compressor_new \
   --allowlist-function compressor_delete \
   --allowlist-function compressor_init \
   --allowlist-function compressor_process \
   --allowlist-function compressor_get_output_basis_file \
+  --allowlist-function compressor_get_output_ktx2_file \
   \
   --allowlist-function compressor_get_basis_file_size \
   --allowlist-function compressor_get_basis_bits_per_texel \
@@ -155,8 +182,11 @@ bindgen vendor/encode_wrapper.cpp -o src/encoding.rs \
   --allowlist-var basisu::BASISU_RDO_UASTC_DICT_SIZE_MAX \
   --allowlist-var basisu::TOTAL_PACK_UASTC_LEVELS \
   \
+  --allowlist-type basist::ktx2_supercompression \
+  \
   --opaque-type CompressorParams \
   --opaque-type Compressor \
   --opaque-type basisu::image \
+  --opaque-type basisu::imagef \
   \
   -- -x c++ -std=c++17

@@ -16,6 +16,17 @@ extern "C" {
         uint32_t combined;
     };
 
+    union ColorF {
+        struct Channels {
+            float r;
+            float g;
+            float b;
+            float a;
+        } channels;
+
+        float components[4];
+    };
+
     // These are in an anonymous enum, so wrap them
     enum UastcPackFlags {
         PackUASTCLevelFastest = basisu::cPackUASTCLevelFastest,
@@ -30,10 +41,6 @@ extern "C" {
         PackUASTCETC1FastestHints = basisu::cPackUASTCETC1FastestHints,
         PackUASTCETC1DisableFlipAndIndividual = basisu::cPackUASTCETC1DisableFlipAndIndividual,
     };
-
-    void image_clear(basisu::image *image) {
-        image->clear();
-    }
 
     //
     // These mirror the constructors (we don't expose new/delete)
@@ -93,6 +100,10 @@ extern "C" {
         return image->get_total_blocks(w, h);
     }
 
+    void image_clear(basisu::image *image) {
+        image->clear();
+    }
+
     struct PixelData {
         ColorU8 *pData;
         size_t length;
@@ -102,6 +113,118 @@ extern "C" {
         PixelData data;
         basisu::color_rgba *colorPtr = image->get_pixels().data();
         data.pData = reinterpret_cast<ColorU8 *>(colorPtr);
+        data.length = image->get_pixels().size();
+        return data;
+    }
+
+    //
+    // HDR Image
+    //
+    void imagef_resize_with_pitch(basisu::imagef *image, uint32_t w, uint32_t h, uint32_t p) {
+        image->resize(w, h, p);
+    }
+
+    void imagef_resize(basisu::imagef *image, uint32_t w, uint32_t h) {
+        imagef_resize_with_pitch(image, w, h, UINT32_MAX);
+    }
+
+    void imagef_init(basisu::imagef *image, const float *pData, uint32_t width, uint32_t height, uint32_t comps) {
+        image->resize(width, height, UINT32_MAX);
+        basisu::vec4F_vec &pixels = image->get_pixels();
+
+        for (uint32_t y = 0; y < height; y++) {
+            for (uint32_t x = 0; x < width; x++) {
+                uint32_t i = y * width + x;
+
+                if (comps == 1) {
+                    pixels[i].set(
+                        pData[i * comps],  // R
+                        pData[i * comps],  // G (copy R)
+                        pData[i * comps],  // B (copy R)
+                        1.0f               // A
+                    );
+                } else if (comps == 2) {
+                    pixels[i].set(
+                        pData[i * comps],      // R
+                        pData[i * comps],      // G (copy R)
+                        pData[i * comps],      // B (copy R)
+                        pData[i * comps + 1]   // A
+                    );
+                } else if (comps == 3) {
+                    pixels[i].set(
+                        pData[i * comps],      // R
+                        pData[i * comps + 1],  // G
+                        pData[i * comps + 2],  // B
+                        1.0f                   // A
+                    );
+                } else { // comps >= 4
+                    pixels[i].set(
+                        pData[i * comps],      // R
+                        pData[i * comps + 1],  // G
+                        pData[i * comps + 2],  // B
+                        pData[i * comps + 3]   // A
+                    );
+                }
+            }
+        }
+    }
+
+    bool imagef_get_pixel_at_checked(basisu::imagef *image, uint32_t x, uint32_t y, ColorF *pOutColor) {
+        if (x >= image->get_width() || y >= image->get_height()) {
+            return false;
+        }
+
+        basisu::vec4F basis_color = (*image)(x, y);
+        *pOutColor = *reinterpret_cast<ColorF*>(&basis_color);
+        return true;
+    }
+
+    ColorF imagef_get_pixel_at_unchecked(basisu::imagef *image, uint32_t x, uint32_t y) {
+        basisu::vec4F basis_color = (*image)(x, y);
+        return *reinterpret_cast<ColorF*>(&basis_color);
+    }
+
+    uint32_t imagef_get_width(basisu::imagef *image) {
+        return image->get_width();
+    }
+
+    uint32_t imagef_get_height(basisu::imagef *image) {
+        return image->get_height();
+    }
+
+    uint32_t imagef_get_pitch(basisu::imagef *image) {
+        return image->get_pitch();
+    }
+
+    uint32_t imagef_get_total_pixels(basisu::imagef *image) {
+        return image->get_total_pixels();
+    }
+
+    uint32_t imagef_get_block_width(basisu::imagef *image, uint32_t w) {
+        return image->get_block_width(w);
+    }
+
+    uint32_t imagef_get_block_height(basisu::imagef *image, uint32_t h) {
+        return image->get_block_height(h);
+    }
+
+    uint32_t imagef_get_total_blocks(basisu::imagef *image, uint32_t w, uint32_t h) {
+        return image->get_total_blocks(w, h);
+    }
+
+    void imagef_clear(basisu::imagef *image) {
+        image->clear();
+    }
+
+    struct HdrPixelData {
+        ColorF *pData;
+        size_t length;
+    };
+
+    HdrPixelData imagef_get_pixel_data(basisu::imagef *image) {
+        HdrPixelData data;
+        basisu::vec4F *colorPtr = image->get_pixels().data();
+        data.pData = reinterpret_cast<ColorF *>(colorPtr);
         data.length = image->get_pixels().size();
         return data;
     }
@@ -129,7 +252,7 @@ extern "C" {
     }
 
     //
-    // These function are used to load image data into the compressor
+    // These function are used to load LDR image data into the compressor
     //
     basisu::image *compressor_params_get_or_create_source_image(CompressorParams *params, uint32_t index) {
         if (params->pParams->m_source_images.size() < index + 1) {
@@ -144,7 +267,26 @@ extern "C" {
     }
 
     void compressor_params_clear_source_image_list(CompressorParams *params) {
-        params->pParams->clear();
+        params->pParams->m_source_images.clear();
+    }
+
+    //
+    // These function are used to load HDR image data into the compressor
+    //
+    basisu::imagef *compressor_params_get_or_create_source_hdr_image(CompressorParams *params, uint32_t index) {
+        if (params->pParams->m_source_images_hdr.size() < index + 1) {
+            params->pParams->m_source_images_hdr.resize(index + 1);
+        }
+
+        return &params->pParams->m_source_images_hdr[index];
+    }
+
+    void compressor_params_resize_source_hdr_image_list(CompressorParams *params, size_t size) {
+        params->pParams->m_source_images_hdr.resize(size);
+    }
+
+    void compressor_params_clear_source_hdr_image_list(CompressorParams *params) {
+        params->pParams->m_source_images_hdr.clear();
     }
 
     // These function are used to load custom mip map image data into the compressor
@@ -232,6 +374,34 @@ extern "C" {
         params->pParams->m_mip_fast = mip_fast;
     }
 
+    void compressor_params_set_hdr(CompressorParams *params, bool hdr) {
+        params->pParams->m_hdr = hdr;
+    }
+
+    void compressor_params_set_hdr_mode(CompressorParams *params, basisu::hdr_modes hdr_mode) {
+        params->pParams->m_hdr_mode = hdr_mode;
+    }
+
+    void compressor_params_set_hdr_favor_astc(CompressorParams *params, bool favor_astc) {
+        params->pParams->m_hdr_favor_astc = favor_astc;
+    }
+
+    void compressor_params_set_create_ktx2_file(CompressorParams *params, bool ktx2_file) {
+        params->pParams->m_create_ktx2_file = ktx2_file;
+    }
+
+    void compressor_params_set_ktx2_srgb_transfer_func(CompressorParams *params, bool srgb) {
+        params->pParams->m_ktx2_srgb_transfer_func = srgb;
+    }
+
+    void compressor_params_set_ktx2_uastc_supercompression(CompressorParams *params, basist::ktx2_supercompression supercompression) {
+        params->pParams->m_ktx2_uastc_supercompression = supercompression;
+    }
+
+    void compressor_params_set_ktx2_zstd_supercompression_level(CompressorParams *params, int level) {
+        params->pParams->m_ktx2_zstd_supercompression_level = level;
+    }
+
     void compressor_params_set_userdata(CompressorParams *params, uint32_t userdata0, uint32_t userdata1) {
         params->pParams->m_userdata0 = userdata0;
         params->pParams->m_userdata1 = userdata1;
@@ -290,6 +460,19 @@ extern "C" {
         const basisu::uint8_vec &basis_file = compressor->pCompressor->get_output_basis_file();
         file.pData = basis_file.data();
         file.length = basis_file.size();
+        return file;
+    }
+
+    struct CompressorKtx2File {
+        const uint8_t *pData;
+        size_t length;
+    };
+
+    CompressorKtx2File compressor_get_output_ktx2_file(Compressor *compressor) {
+        CompressorKtx2File file;
+        const basisu::uint8_vec &ktx2_file = compressor->pCompressor->get_output_ktx2_file();
+        file.pData = ktx2_file.data();
+        file.length = ktx2_file.size();
         return file;
     }
 

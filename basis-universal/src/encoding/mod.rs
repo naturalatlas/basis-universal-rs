@@ -6,6 +6,9 @@ use std::sync::Mutex;
 mod compressor_image;
 pub use compressor_image::*;
 
+mod compressor_hdr_image;
+pub use compressor_hdr_image::*;
+
 mod compressor_params;
 pub use compressor_params::*;
 
@@ -14,6 +17,9 @@ pub use compressor::*;
 
 /// A single uncompressed pixel value
 pub use basis_universal_sys::encoding::ColorU8;
+
+/// A single uncompressed high dynamic range (HDR) pixel value
+pub use basis_universal_sys::encoding::ColorF;
 
 #[cfg(test)]
 mod encoding_tests;
